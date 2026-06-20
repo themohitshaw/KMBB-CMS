@@ -89,7 +89,7 @@ KMBB-CMS/
 
 1. Clone the repository:
 
-git clone https://github.com/yourusername/kmbb-college-management-system.git
+git clone https://github.com/themohitshaw/KMBB-CMS.git
 
 2. Navigate to the project:
 
