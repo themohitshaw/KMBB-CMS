@@ -129,9 +129,72 @@ python app.py
 
 ---
 
-## 📸 Screenshots
+## 📸 Project Screenshots
 
-Project screenshots will be added soon.
+### 🏠 Home Page
+
+![Home Page](screenshots/home_page.png)
+
+---
+
+### 🔐 Admin Login
+
+![Admin Login](screenshots/admin_login.png)
+
+---
+
+### 📊 Admin Dashboard
+
+![Admin Dashboard](screenshots/admin_dashboard.png)
+
+---
+
+### 👨‍🏫 Faculty Login
+
+![Faculty Login](screenshots/faculty_login.png)
+
+---
+
+### 👨‍🏫 Faculty Dashboard
+
+![Faculty Dashboard](screenshots/faculty_dashboard.png)
+
+---
+
+### 🎓 Student Login
+
+![Student Login](screenshots/student_login.png)
+
+---
+
+### 🎓 Student Dashboard
+
+![Student Dashboard](screenshots/student_dashboard.png)
+
+---
+
+### 🪪 Student ID Card
+
+![Student ID Card](screenshots/student_id_card.png)
+
+---
+
+### 📅 Attendance Management
+
+![Attendance Management](screenshots/attendance_sheet.png)
+
+---
+
+### 📝 Mark Sheet
+
+![Mark Sheet](screenshots/mark_sheet.png)
+
+---
+
+### 📢 Notice Board
+
+![Notice Board](screenshots/notice_board.png)
+
 
 ---
 
