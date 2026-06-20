@@ -1,0 +1,288 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+        min-height: 100vh;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    /* Title */
+
+    .page-title {
+        text-align: center;
+        color: white;
+        font-size: 32px;
+        margin-top: 30px;
+        margin-bottom: 25px;
+    }
+
+    /* Card */
+
+    .table-card {
+        width: 95%;
+        max-width: 1200px;
+        margin: auto;
+        padding: 30px;
+        border-radius: 15px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Table wrapper for mobile scroll */
+
+    .table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    /* Table */
+
+    .attendance-table {
+        width: 100%;
+        border-collapse: collapse;
+        color: white;
+        min-width: 500px;
+    }
+
+    .attendance-table th {
+        background: rgba(255, 255, 255, 0.15);
+        padding: 14px;
+        text-align: center;
+        font-size: 16px;
+    }
+
+    .attendance-table td {
+        padding: 14px;
+        text-align: center;
+        font-size: 15px;
+    }
+
+    .attendance-table tr {
+        transition: 0.3s;
+    }
+
+    .attendance-table tr:hover {
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    /* BIG RADIO BUTTON */
+
+    input[type="radio"] {
+        transform: scale(1.8);
+        cursor: pointer;
+    }
+
+    /* Present / Absent colors */
+
+    .present {
+        accent-color: #28a745;
+    }
+
+    .absent {
+        accent-color: #dc3545;
+    }
+
+    /* Submit button */
+
+    .submit-btn {
+        display: block;
+        margin: 25px auto 0;
+        padding: 12px 40px;
+        border: none;
+        border-radius: 10px;
+        background: #0d6efd;
+        color: white;
+        font-size: 18px;
+        transition: 0.3s;
+    }
+
+    .submit-btn:hover {
+        background: #084298;
+    }
+
+    .student-photo {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid white;
+    }
+
+    .date-box {
+        text-align: center;
+        margin-bottom: 20px;
+        color: white;
+    }
+
+    .date-box input {
+        padding: 8px 12px;
+        border-radius: 6px;
+        border: none;
+        margin-left: 10px;
+    }
+
+    .class-info {
+        text-align: center;
+        color: white;
+        margin-bottom: 20px;
+        font-size: 16px;
+    }
+
+    .class-info span {
+        margin: 0 15px;
+    }
+
+    /* 📱 MOBILE RESPONSIVE (UNDER 480px) */
+
+    @media(max-width:480px) {
+
+        .page-title {
+            font-size: 22px;
+        }
+
+        .table-card {
+            padding: 15px;
+        }
+
+        .attendance-table th {
+            font-size: 13px;
+            padding: 10px;
+        }
+
+        .attendance-table td {
+            font-size: 13px;
+            padding: 10px;
+        }
+
+        /* radio slightly smaller for mobile */
+
+        input[type="radio"] {
+            transform: scale(1.5);
+        }
+
+        .submit-btn {
+            width: 100%;
+            font-size: 16px;
+        }
+
+        .student-photo {
+            width: 35px;
+            height: 35px;
+        }
+    }
+
+    .back-btn {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        background-color: rgba(0, 0, 0, 0.3);
+        color: white;
+        padding: 8px 15px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        z-index: 1000;
+        transition: 0.3s ease;
+    }
+
+    .back-btn:hover {
+        background-color: #444;
+        color: white;
+    }
+</style>
+
+<a href="{{ url_for('attendance_option', subject_id=session['subject_id']) }}" class="back-btn">
+    <i class="fa-solid fa-arrow-left"></i> Back
+</a>
+
+<h2 class="page-title">
+    📋 Take Attendance
+</h2>
+
+<div class="class-info">
+    <span> Year: <b>{{ year }}</b></span>
+    <span> Branch: <b>{{ branch }}</b></span>
+    <span> Subject: <b>{{ subject_name }}</b></span>
+    <span> Total Students: <b>{{ total_students }}</b></span>
+</div>
+
+<!-- FLASH MESSAGES -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for category, message in messages %}
+<div class="alert alert-{{ category }} alert-dismissible fade show text-center" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+
+<div class="table-card">
+
+    <form method="POST">
+        <div class="date-box">
+            <label>Attendance Date :</label>
+            <input type="date" name="attendance_date" max="{{ today }}" required>
+        </div>
+
+        <div class="table-wrapper">
+
+            <table class="attendance-table">
+
+                <thead>
+                    <tr>
+                        <th>Photo</th>
+                        <th>Roll</th>
+                        <th>Name</th>
+                        <th>Present</th>
+                        <th>Absent</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for student in students %}
+
+                    <tr>
+
+                        <td>
+                            <img src="{{ url_for('student_photo', student_id=student.student_id) }}"
+                                class="student-photo">
+                        </td>
+
+                        <td>{{ student.regd_no }}</td>
+
+                        <td>{{ student.name }}</td>
+
+                        <td>
+                            <input type="radio" name="status_{{ student.regd_no }}" value="Present" class="present"
+                                required>
+                        </td>
+
+                        <td>
+                            <input type="radio" name="status_{{ student.regd_no }}" value="Absent" class="absent">
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        <button class="submit-btn">
+            Submit Attendance
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}

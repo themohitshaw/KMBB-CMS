@@ -1,0 +1,245 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+        min-height: 100vh;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .page-wrapper {
+        width: 95%;
+        max-width: 1400px;
+        margin: 20px auto;
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(12px);
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0 10px 35px rgba(0, 0, 0, 0.3);
+    }
+
+    .page-title {
+        text-align: center;
+        font-size: 28px;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 20px;
+    }
+
+    .subject-info {
+        text-align: center;
+        color: white;
+        margin-bottom: 20px;
+        line-height: 1.6;
+        font-size: 15px;
+    }
+
+    /* TABLE WRAPPER FOR SCROLL */
+    .table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .marks-table {
+        width: 100%;
+        border-collapse: collapse;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.1);
+        min-width: 500px;
+    }
+
+    .marks-table th {
+        background: linear-gradient(135deg, #203a43, #2c5364);
+        color: white;
+        padding: 12px;
+        font-size: 14px;
+    }
+
+    .marks-table td {
+        padding: 10px;
+        text-align: center;
+        color: white;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        font-size: 14px;
+    }
+
+    .student-photo {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #2c5364;
+    }
+
+    .mark-badge {
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-weight: 600;
+        background: linear-gradient(45deg, #00c6ff, #0072ff);
+        color: white;
+        font-size: 13px;
+    }
+
+    .not-entered {
+        color: #ffb3b3;
+        font-size: 13px;
+    }
+
+    /* BACK BUTTON */
+    .back-btn {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        background-color: rgba(0, 0, 0, 0.3);
+        color: white;
+        padding: 8px 15px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        z-index: 1000;
+        transition: 0.3s ease;
+    }
+
+    .back-btn:hover {
+        background-color: #444;
+        color: white;
+    }
+
+    /* 📱 MOBILE VIEW (CARD STYLE) */
+    @media (max-width: 480px) {
+
+        .page-wrapper {
+            padding: 15px;
+        }
+
+        .page-title {
+            font-size: 22px;
+        }
+
+        .marks-table {
+            display: none;
+        }
+
+        .mobile-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .student-card {
+            background: rgba(255, 255, 255, 0.12);
+            padding: 15px;
+            border-radius: 12px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .student-card img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+        }
+
+        .student-details {
+            flex: 1;
+        }
+
+        .student-details div {
+            font-size: 13px;
+            margin-bottom: 3px;
+        }
+    }
+
+    /* Hide mobile cards on desktop */
+    @media (min-width: 481px) {
+        .mobile-cards {
+            display: none;
+        }
+    }
+</style>
+
+<a href="{{url_for('internal_subjects')}}" class="back-btn">
+    <i class="fa-solid fa-arrow-left"></i> Back
+</a>
+<!-- FLASH MESSAGES -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for category, message in messages %}
+<div class="alert alert-{{ category }} alert-dismissible fade show text-center" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+<div class="page-wrapper">
+
+    <div class="page-title">
+        📊 View Student Marks
+    </div>
+
+    <div class="subject-info">
+        <p><strong>Year:</strong> {{ year }}</p>
+        <p><strong>Branch:</strong> {{ branch }}</p>
+        <p><strong>Subject:</strong> {{ subject_name }}</p>
+        <p><strong>Total Students:</strong> {{ total_students }}</p>
+    </div>
+
+    <!-- DESKTOP TABLE -->
+    <div class="table-wrapper">
+        <table class="marks-table">
+            <thead>
+                <tr>
+                    <th>Photo</th>
+                    <th>Regd No</th>
+                    <th>Name</th>
+                    <th>Marks</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr>
+                    <td>
+                        <img src="{{ url_for('student_photo', student_id=student.student_id) }}" class="student-photo">
+                    </td>
+                    <td>{{student.regd_no}}</td>
+                    <td>{{student.name}}</td>
+                    <td>
+                        {% if student.marks_obtained %}
+                        <span class="mark-badge">{{ student.marks_obtained }}/30</span>
+                        {% else %}
+                        <span class="not-entered">Not Entered</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 📱 MOBILE CARDS -->
+    <div class="mobile-cards">
+        {% for student in students %}
+        <div class="student-card">
+            <img src="{{ url_for('student_photo', student_id=student.student_id) }}">
+            <div class="student-details">
+                <div><strong>{{student.name}}</strong></div>
+                <div>Regd: {{student.regd_no}}</div>
+                <div>
+                    {% if student.marks_obtained %}
+                    <span class="mark-badge">{{ student.marks_obtained }}/30</span>
+                    {% else %}
+                    <span class="not-entered">Not Entered</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+{% endblock %}

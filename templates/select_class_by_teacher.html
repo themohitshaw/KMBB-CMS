@@ -1,0 +1,314 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+
+body{
+    background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+    font-family:'Segoe UI',sans-serif;
+}
+
+/* MAIN WRAPPER */
+.notes-wrapper{
+    width:90%;
+    max-width:1400px;
+    margin:auto;
+    margin-top:40px;
+    padding:20px;
+}
+
+/* TITLE */
+.page-title{
+    text-align:center;
+    color:white;
+    font-size:28px;
+    margin-bottom:25px;
+}
+
+/* FORM */
+.class-form{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:15px;
+    flex-wrap:wrap;
+    background:rgba(255,255,255,0.08);
+    padding:20px;
+    border-radius:12px;
+    margin-bottom:30px;
+}
+
+.class-form select{
+    width:180px;
+    padding:10px;
+    border-radius:8px;
+    border:none;
+}
+
+.show-btn{
+    padding:10px 22px;
+    border-radius:8px;
+}
+
+/* SEARCH */
+.search-box{
+    text-align:center;
+    margin-bottom:25px;
+}
+
+.search-box input{
+    width:300px;
+    padding:10px 15px;
+    border-radius:25px;
+    border:none;
+    outline:none;
+}
+
+/* GRID */
+.notes-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+    gap:20px;
+}
+
+/* CARD */
+.note-card{
+    background:rgba(255,255,255,0.95);
+    padding:20px;
+    border-radius:16px;
+    color:#333;
+    transition:.3s;
+    box-shadow:0 6px 20px rgba(0,0,0,0.3);
+    cursor:pointer;
+}
+
+.note-card:hover{
+    transform:translateY(-5px);
+}
+
+.note-card h3{
+    margin-bottom:10px;
+    font-size:18px;
+}
+
+.subject-meta{
+    font-size:14px;
+}
+
+/* BACK BUTTON */
+.back-btn{
+    position:fixed;
+    top:15px;
+    left:15px;
+    background:rgba(0,0,0,0.4);
+    color:white;
+    padding:8px 14px;
+    border-radius:8px;
+    text-decoration:none;
+    font-size:14px;
+}
+
+/* MODAL */
+.modal-content{
+    border-radius:15px;
+}
+
+.modal-backdrop.show{
+    backdrop-filter: blur(5px);
+}
+
+/* MOBILE */
+@media(max-width:400px){
+
+    .page-title{
+        font-size:22px;
+    }
+
+    .notes-wrapper{
+        width:95%;
+        padding:15px;
+    }
+
+    .class-form{
+        flex-direction:column;
+        gap:12px;
+        padding:15px;
+    }
+
+    .class-form select{
+        width:100%;
+        font-size:14px;
+    }
+
+    .show-btn{
+        width:100%;
+        font-size:15px;
+    }
+
+    .notes-grid{
+        grid-template-columns:1fr;
+    }
+
+    .note-card{
+        padding:15px;
+    }
+
+    .note-card h3{
+        font-size:16px;
+    }
+
+    .subject-meta{
+        font-size:13px;
+    }
+
+    .back-btn{
+        font-size:12px;
+        padding:6px 10px;
+    }
+
+    .search-box input{
+        width:100%;
+    }
+}
+
+</style>
+
+<a href="{{url_for('teacher_data')}}" class="back-btn">
+    <i class="fa-solid fa-arrow-left"></i> Back
+</a>
+
+<div class="notes-wrapper">
+
+<h2 class="page-title">📚 Select Class & Subject</h2>
+
+<!-- FORM -->
+<form method="POST" class="class-form">
+    {{ form.hidden_tag() }}
+
+    <select name="year" required>
+        <option value="">Select Year</option>
+        {% for y in range(1,5) %}
+        <option value="{{ y }}" {% if form.year.data==y|string %}selected{% endif %}>{{ y }}</option>
+        {% endfor %}
+    </select>
+
+    <select name="branch" required>
+        <option value="">Select Branch</option>
+        {% for b in ['CSE','ECE','ME','CE','EE'] %}
+        <option value="{{ b }}" {% if form.branch.data==b %}selected{% endif %}>{{ b }}</option>
+        {% endfor %}
+    </select>
+
+    <button type="submit" class="btn btn-primary show-btn">
+        Show Subjects
+    </button>
+</form>
+
+<!-- FLASH -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for category, message in messages %}
+<div class="alert alert-{{ category }} alert-dismissible fade show text-center" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+
+{% if subjects %}
+
+<!-- SEARCH -->
+<div class="search-box">
+    <input type="text" id="searchInput" placeholder="Search Subject...">
+</div>
+
+<!-- GRID -->
+<div class="notes-grid" id="notesContainer">
+
+{% for subject in subjects %}
+<div class="note-card subject-card"
+     data-subject-id="{{ subject['subject_id'] }}">
+
+<h3>{{ subject['subject_name'] }}</h3>
+
+<div class="subject-meta">
+<strong>Branch:</strong> {{ subject['branch'] }} <br>
+<strong>Year:</strong> {{ subject['year'] }} <br>
+<strong>Code:</strong> {{ subject['subject_code'] }}
+</div>
+
+</div>
+{% endfor %}
+
+</div>
+
+{% endif %}
+
+</div>
+
+<!-- MODAL -->
+<div class="modal fade" id="passwordModal" tabindex="-1">
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content">
+
+<form method="POST" action="{{ url_for('verify_subject_password') }}">
+
+<div class="modal-header">
+<h5 class="modal-title">🔐 Subject Access</h5>
+<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+</div>
+
+<div class="modal-body">
+
+<input type="hidden" name="subject_id" id="modalSubjectId">
+
+<input type="password"
+       name="password"
+       class="form-control"
+       placeholder="Enter Password"
+       required>
+
+</div>
+
+<div class="modal-footer">
+<button type="submit" class="btn btn-primary w-100">
+Verify & Continue →
+</button>
+</div>
+
+</form>
+
+</div>
+</div>
+</div>
+
+<script>
+
+/* SEARCH */
+const searchInput = document.getElementById("searchInput");
+
+if(searchInput){
+    searchInput.addEventListener("keyup", function(){
+        let filter = this.value.toLowerCase();
+
+        document.querySelectorAll(".note-card").forEach(card=>{
+            let text = card.innerText.toLowerCase();
+            card.style.display = text.includes(filter) ? "block" : "none";
+        });
+    });
+}
+
+/* MODAL */
+document.querySelectorAll(".subject-card").forEach(card=>{
+    card.addEventListener("click",function(){
+        let id = this.dataset.subjectId;
+        document.getElementById("modalSubjectId").value = id;
+
+        new bootstrap.Modal(document.getElementById("passwordModal")).show();
+    });
+});
+
+</script>
+
+{% endblock %}

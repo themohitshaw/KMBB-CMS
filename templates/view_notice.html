@@ -1,0 +1,284 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    /* ===== PAGE TITLE ===== */
+    .page-title {
+        text-align: center;
+        font-size: 2.6rem;
+        font-weight: 600;
+        margin-bottom: 25px;
+        color: #222;
+    }
+
+    /* ===== SEARCH BOX ===== */
+    .search-box {
+        max-width: 700px;
+        margin: auto;
+        display: flex;
+        gap: 10px;
+        margin-bottom: 25px;
+    }
+
+    .search-box input {
+        flex: 1;
+        padding: 11px 14px;
+        border-radius: 6px;
+        border: 1px solid #ddd;
+        font-size: 0.9rem;
+        transition: 0.2s;
+    }
+
+    .search-box input:focus {
+        border-color: #ff6a00;
+        box-shadow: 0 0 5px rgba(255, 106, 0, 0.3);
+        outline: none;
+    }
+
+    /* BUTTON */
+    .search-box button {
+        padding: 10px 18px;
+        border-radius: 6px;
+        border: none;
+        background: #ff6a00;
+        color: white;
+        font-size: 0.85rem;
+        transition: 0.2s;
+    }
+
+    .search-box button:hover {
+        background: #e55a00;
+    }
+
+    /* ===== NOTICE CONTAINER ===== */
+    .notice-container {
+        max-width: 900px;
+        margin: auto;
+        max-height: 65vh;
+        overflow-y: auto;
+        padding-right: 5px;
+    }
+
+    /* SCROLLBAR */
+    .notice-container::-webkit-scrollbar {
+        width: 5px;
+    }
+
+    .notice-container::-webkit-scrollbar-thumb {
+        background: #ccc;
+        border-radius: 10px;
+    }
+
+    /* ===== NOTICE CARD ===== */
+    .notice-card {
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 12px;
+        border-left: 4px solid #ff6a00;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        transition: 0.25s ease;
+    }
+
+    /* subtle hover */
+    .notice-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.12);
+    }
+
+    /* ===== TEXT ===== */
+    .notice-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #222;
+    }
+
+    .notice-meta {
+        font-size: 0.82rem;
+        color: #666;
+        margin-top: 4px;
+    }
+
+    .notice-desc {
+        font-size: 0.9rem;
+        margin-top: 8px;
+        color: #444;
+    }
+
+    /* DATE */
+    .notice-date {
+        font-size: 0.75rem;
+        color: #888;
+        text-align: right;
+        margin-top: 6px;
+    }
+
+    /* ===== NO DATA ===== */
+    .no-data {
+        text-align: center;
+        color: #999;
+        margin-top: 25px;
+        font-size: 0.9rem;
+    }
+
+    /* ===== SIMPLE ANIMATION ===== */
+    .notice-card {
+        opacity: 0;
+        transform: translateY(15px);
+        animation: fadeUp 0.4s ease forwards;
+    }
+
+    .notice-card:nth-child(1) {
+        animation-delay: .1s;
+    }
+
+    .notice-card:nth-child(2) {
+        animation-delay: .2s;
+    }
+
+    .notice-card:nth-child(3) {
+        animation-delay: .3s;
+    }
+
+    .notice-card:nth-child(4) {
+        animation-delay: .4s;
+    }
+
+    @keyframes fadeUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* ===== MOBILE ===== */
+    @media (max-width: 450px) {
+
+        .search-box {
+            flex-direction: column;
+        }
+
+        .search-box button {
+            width: 100%;
+        }
+
+        .notice-container {
+            max-height: 60vh;
+        }
+
+        .notice-title {
+            font-size: 0.95rem;
+        }
+
+    }
+
+
+    .back-btn {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        background-color: rgba(0, 0, 0, 0.3);
+        color: white;
+        padding: 8px 15px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        z-index: 1000;
+        transition: 0.3s ease;
+    }
+
+    .back-btn:hover {
+        background-color: #444;
+        color: white;
+    }
+</style>
+
+
+<a href="{{url_for('institute_data')}}" class="back-btn">
+    <i class="fa-solid fa-arrow-left"></i> Back
+</a>
+<!-- FLASH MESSAGES -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for category, message in messages %}
+<div class="alert alert-{{ category }} alert-dismissible fade show text-center" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+<div class="container mt-4">
+
+    <div class="page-title">Search Notice</div>
+
+    <!-- SEARCH -->
+    <form method="GET" action="{{ url_for('view_notice') }}" class="search-box">
+        <input type="text" name="search" placeholder="Enter Notice Number..."
+            value="{{ request.args.get('search','') }}">
+        <button type="submit">Search</button>
+    </form>
+
+    <!-- NOTICE LIST -->
+    <div class="notice-container">
+
+        {% if notices %}
+
+        {% for notice in notices %}
+
+        <div class="notice-card">
+
+            <div class="notice-title">
+                {{ notice.notice_number }} - {{ notice.title }}
+            </div>
+
+            <div class="notice-meta">
+                Purpose: {{ notice.purpose }} |
+                By: {{ notice.declared_by }}
+            </div>
+
+            <div class="notice-desc">
+                {{ notice.description }}
+            </div>
+
+            <div class="notice-date">
+                {{ notice.created_at.strftime('%d %b %Y') }}
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+        {% else %}
+
+        <div class="no-data">
+            No Notice Found
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+<script>
+    const searchInput = document.querySelector('input[name="search"]');
+    const form = document.querySelector('.search-box');
+
+    let timeout = null;
+
+    searchInput.addEventListener("input", function () {
+
+        clearTimeout(timeout);
+
+        timeout = setTimeout(() => {
+
+            if (this.value.trim() === "") {
+                window.location.href = "{{ url_for('view_notice') }}";
+            } else {
+                form.submit();  // 🔥 auto search
+            }
+
+        }, 500); // delay for smooth typing
+    });
+</script>
+{% endblock %}

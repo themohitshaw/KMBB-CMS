@@ -1,0 +1,295 @@
+{% extends "base.html" %}
+{% block title %} Teacher Profile {% endblock %}
+
+{% block style %}
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        background: linear-gradient(to right, #e0eafc, #cfdef3);
+        overflow-x: hidden;
+    }
+
+    /* MAIN WRAPPER */
+    .profile-wrapper {
+        margin: 40px auto;
+        width: 95%;
+        max-width: 1100px;
+        display: flex;
+        gap: 30px;
+        flex-wrap: wrap;
+    }
+
+    /* ================= LEFT CARD ================= */
+    .profile-sidebar {
+        flex: 1;
+        min-width: 0;
+        /* background: linear-gradient(135deg, #667eea, #764ba2); */
+        /* background: linear-gradient(135deg, #11998e, #38ef7d); */
+        background: linear-gradient(135deg, #1e3c72, #2a5298);
+        /* background: linear-gradient(135deg, #232526, #414345); */
+        /* background: linear-gradient(135deg, #ff512f, #dd2476); */
+        /* background: linear-gradient(135deg, #134e5e, #71b280); */
+
+        color: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        text-align: center;
+    }
+
+    .profile-sidebar img {
+        width: 130px;
+        height: 130px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 5px solid white;
+        margin-bottom: 15px;
+    }
+
+    .profile-sidebar h4 {
+        font-size: 20px;
+        margin-bottom: 10px;
+    }
+
+    .profile-sidebar p {
+        font-size: 14px;
+        margin: 4px 0;
+    }
+
+    /* ACTION BUTTONS */
+    .action-buttons {
+        margin-top: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .action-buttons a {
+        text-decoration: none;
+        padding: 10px;
+        border-radius: 30px;
+        background: white;
+        color: #2a5298;
+        font-weight: 600;
+        font-size: 14px;
+        transition: 0.3s;
+        word-break: break-word;
+    }
+
+    .action-buttons a:hover {
+        background: #ffd700;
+        color: black;
+    }
+
+    /* ================= RIGHT CARD ================= */
+    .profile-content {
+        flex: 2;
+        min-width: 0;
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        overflow-x: hidden;
+    }
+
+    /* TABLE FIX */
+    .profile-table {
+        width: 100%;
+    }
+
+    .profile-table td {
+        padding: 12px 8px;
+        word-break: break-word;
+    }
+
+    .profile-table td:first-child {
+        font-weight: 600;
+        color: #2a5298;
+        width: 40%;
+    }
+
+    /* ================= RESPONSIVE ================= */
+
+    /* Under 768px */
+    @media (max-width: 768px) {
+        .profile-wrapper {
+            flex-direction: column;
+        }
+
+        .profile-sidebar,
+        .profile-content {
+            width: 100%;
+        }
+    }
+
+    /* Under 450px */
+    @media (max-width: 450px) {
+
+        .profile-sidebar {
+            padding: 20px 15px;
+        }
+
+        .profile-content {
+            padding: 20px 15px;
+        }
+
+        .profile-sidebar img {
+            width: 100px;
+            height: 100px;
+        }
+
+        .profile-table,
+        .profile-table tr,
+        .profile-table td {
+            display: block;
+            width: 100%;
+        }
+
+        .profile-table tr {
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .profile-table td {
+            padding: 5px 0;
+        }
+
+        .profile-table td:first-child {
+            width: 100%;
+            font-size: 13px;
+        }
+
+    }
+
+    /* Back Button */
+    .back-btn {
+        position: fixed;
+        top: 15px;
+        left: 15px;
+        background-color: rgba(0, 0, 0, 0.4);
+        color: white;
+        padding: 8px 14px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        z-index: 1000;
+        transition: 0.3s ease;
+        font-size: 14px;
+    }
+
+    .back-btn:hover {
+        background-color: #222;
+    }
+</style>
+
+
+
+{% endblock %}
+
+{% block content %}
+
+<div class="profile-wrapper">
+    <a href="{{url_for('teacher_login')}}" class="back-btn">
+        <i class="fa-solid fa-arrow-left"></i> Back
+    </a>
+
+    <!-- LEFT SIDE -->
+    <div class="profile-sidebar">
+
+        {% if teacher.photo %}
+        <img src="{{ url_for('teacher_photo', teacher_id=teacher.teacher_id) }}">
+        {% else %}
+        <img src="{{ url_for('static', filename='default.png') }}">
+        {% endif %}
+
+        <h4>{{ teacher.full_name }}</h4>
+        <p><strong>Regd No:</strong> {{ teacher.regd_no }}</p>
+        <p><strong>Designation:</strong> {{ teacher.designation }}</p>
+        <p><strong>Department:</strong> {{ teacher.department }}</p>
+
+        <!-- ACTION BUTTONS -->
+        <div class="action-buttons">
+
+            <a href="{{ url_for('select_class_by_teacher') }}">
+                📋 Attendance Section
+            </a>
+
+            <a href="{{ url_for('select_exam_by_teacher') }}">
+                📝 Marks Section
+            </a>
+
+            <a href="{{ url_for('add_subject_notes') }}">
+                📚 Notes Section
+            </a>
+
+            <a href="{{ url_for('teacher_id_card', teacher_id=teacher.teacher_id) }}">
+                🆔 Download ID Card
+            </a>
+
+
+        </div>
+
+    </div>
+
+    <!-- RIGHT SIDE -->
+    <div class="profile-content">
+
+        <table class="table profile-table">
+
+            <tr>
+                <td>Full Name</td>
+                <td>{{ teacher.full_name }}</td>
+            </tr>
+            <tr>
+                <td>Email</td>
+                <td>{{ teacher.email }}</td>
+            </tr>
+            <tr>
+                <td>Phone</td>
+                <td>{{ teacher.phone }}</td>
+            </tr>
+            <tr>
+                <td>Gender</td>
+                <td>{{ teacher.gender }}</td>
+            </tr>
+            <tr>
+                <td>Date of Birth</td>
+                <td>{{ teacher.date_of_birth }}</td>
+            </tr>
+            <tr>
+                <td>Blood Group</td>
+                <td>{{ teacher.blood_group }}</td>
+            </tr>
+            <tr>
+                <td>Qualification</td>
+                <td>{{ teacher.qualification }}</td>
+            </tr>
+            <tr>
+                <td>Experience (Years)</td>
+                <td>{{ teacher.experience_years }}</td>
+            </tr>
+            <tr>
+                <td>Date of Joining</td>
+                <td>{{ teacher.date_of_joining }}</td>
+            </tr>
+            <tr>
+                <td>Address</td>
+                <td>{{ teacher.address }}</td>
+            </tr>
+            <tr>
+                <td>Salary</td>
+                <td>₹ {{ teacher.salary }}</td>
+            </tr>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}

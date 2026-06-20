@@ -1,0 +1,226 @@
+{% extends "base.html" %}
+
+{% block style %}
+<style>
+    .update-card {
+        width: 100%;
+        max-width: 950px;
+        background: rgba(255, 255, 255, 0.65);
+        backdrop-filter: blur(12px);
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+        padding: 40px;
+        animation: fadeIn 0.4s ease-in-out;
+    }
+
+    .page-wrapper {
+        min-height: 90vh;
+    }
+
+    .back-btn {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        background: rgba(0, 0, 0, 0.3);
+        color: white;
+        padding: 8px 15px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        z-index: 1000;
+        transition: 0.3s;
+    }
+
+    .back-btn:hover {
+        background: #444;
+        color: white;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #333;
+    }
+
+    .form-control,
+    .form-select {
+        border-radius: 10px;
+        padding: 10px;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+        border-color: #444;
+    }
+
+    .btn-success {
+        border-radius: 12px;
+        padding: 12px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+
+    @media (max-width: 768px) {
+        .update-card {
+            padding: 20px;
+            margin: 10px;
+        }
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+<a href="{{url_for('institute_update_teacher')}}" class="back-btn">
+    <i class="fa-solid fa-arrow-left"></i> Back
+</a>
+<!-- FLASH MESSAGES -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for category, message in messages %}
+<div class="alert alert-{{ category }} alert-dismissible fade show text-center" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+<div class="container d-flex justify-content-center align-items-center page-wrapper">
+    <div class="update-card">
+
+        <h3 class="text-center mb-4">
+            <i class="fa-solid fa-user-pen"></i> Update Faculty
+        </h3>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <form method="POST" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+
+            <!-- IMPORTANT FIX: Send regd_no in hidden input -->
+            <input type="hidden" name="regd_no" value="{{ regd_no }}">
+
+            <div class="mb-3">
+                <label class="form-label">Registration Number</label>
+                <input type="text" class="form-control" value="{{ regd_no }}" readonly>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    {{ form.full_name.label(class="form-label") }}
+                    {{ form.full_name(class="form-control") }}
+                    {% for error in form.full_name.errors %}
+                    <small class="text-danger">{{ error }}</small>
+                    {% endfor %}
+                </div>
+                <div class="col-md-6 mb-3">
+                    {{ form.aadhaar.label(class="form-label") }}
+                    {{ form.aadhaar(class="form-control") }}
+                    {% for error in form.aadhaar.errors %}
+                    <small class="text-danger">{{ error }}</small>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    {{ form.gender.label(class="form-label") }}
+                    {{ form.gender(class="form-select") }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    {{ form.date_of_birth.label(class="form-label") }}
+                    {{ form.date_of_birth(class="form-control", type="date") }}
+                </div>
+            </div>
+
+            <div class="mb-3">
+                {{ form.address.label(class="form-label") }}
+                {{ form.address(class="form-control") }}
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    {{ form.blood_group.label(class="form-label") }}
+                    {{ form.blood_group(class="form-control") }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    {{ form.phone.label(class="form-label") }}
+                    {{ form.phone(class="form-control") }}
+                </div>
+            </div>
+
+            <div class="mb-3">
+                {{ form.email.label(class="form-label") }}
+                {{ form.email(class="form-control") }}
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    {{ form.designation.label(class="form-label") }}
+                    {{ form.designation(class="form-control") }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    {{ form.qualification.label(class="form-label") }}
+                    {{ form.qualification(class="form-control") }}
+                </div>
+            </div>
+
+            <div class="mb-3">
+                {{ form.department.label(class="form-label") }}
+                {{ form.department(class="form-control") }}
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    {{ form.experience_years.label(class="form-label") }}
+                    {{ form.experience_years(class="form-control") }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    {{ form.date_of_joining.label(class="form-label") }}
+                    {{ form.date_of_joining(class="form-control", type="date") }}
+                </div>
+            </div>
+
+            <div class="mb-3">
+                {{ form.salary.label(class="form-label") }}
+                {{ form.salary(class="form-control") }}
+            </div>
+
+            <div class="mb-3">
+                {{ form.photo.label(class="form-label") }}
+                {{ form.photo(class="form-control") }}
+                <small class="text-muted">Upload only if you want to change the photo</small>
+            </div>
+
+            <div class="d-grid mt-4">
+                {{ form.submit(class="btn btn-success btn-lg") }}
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+{% endblock %}

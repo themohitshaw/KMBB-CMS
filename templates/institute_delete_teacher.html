@@ -1,0 +1,225 @@
+{% extends "base.html" %}
+
+{% block title %} Delete Student {% endblock %}
+
+{% block style %}
+<style>
+    .update-card {
+        width: 100%;
+        max-width: 450px;
+        backdrop-filter: blur(10px);
+        background: rgba(255, 255, 255, 0.6);
+        border-radius: 15px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        padding: 30px;
+    }
+
+    .update-heading {
+        font-weight: 600;
+        text-align: center;
+        margin-bottom: 25px;
+    }
+
+    @media (max-width: 576px) {
+        .update-card {
+            padding: 20px;
+        }
+    }
+
+    .back-btn {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        background-color: rgba(0, 0, 0, 0.3);
+        color: white;
+        padding: 8px 15px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        z-index: 1000;
+        transition: 0.3s ease;
+    }
+
+    .back-btn:hover {
+        background-color: #444;
+        color: white;
+    }
+</style>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+    <a href="{{url_for('institute_data')}}" class="back-btn">
+        <i class="fa-solid fa-arrow-left"></i> Back
+    </a>
+
+    <!-- FLASH MESSAGES -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="alert alert-{{ category }} alert-dismissible fade show text-center" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    <!-- SEARCH CARD -->
+    <div class="d-flex justify-content-center mb-4">
+        <div class="update-card">
+
+            <h3 class="update-heading">
+                <i class="fa-solid fa-magnifying-glass"></i> Search for Faculty to Delete
+            </h3>
+
+            <form method="POST">
+                {{ form.hidden_tag() }}
+
+                <div class="mb-3">
+                    {{ form.regd_no.label(class="form-label fw-bold") }}
+                    {{ form.regd_no(class="form-control", placeholder="Enter Registration Number") }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.name.label(class="form-label fw-bold") }}
+                    {{ form.name(class="form-control", placeholder="Enter Student Name") }}
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        Search
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+    <!-- RESULT TABLE -->
+    {% if searched %}
+    {% if teachers %}
+    <div class="card shadow p-4" style="background: rgba(255,255,255,0.85); border-radius:15px;">
+        <h4 class="text-center mb-3">Search Results</h4>
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover text-center align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Regd No</th>
+                        <th>Name</th>
+                        <th>Gender</th>
+                        <th>Designation</th>
+                        <th>Qualification</th>
+                        <th>Exp Yrs</th>
+                        <th>DOJ</th>
+                        <th>Salary</th>
+                        <th>Photo</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for teacher in teachers %}
+                    <tr>
+                        <td>{{ teacher.regd_no }}</td>
+                        <td>{{ teacher.full_name }}</td>
+                        <td>{{ teacher.gender}}</td>
+                        <td>{{ teacher.designation}}</td>
+                        <td>{{ teacher.qualification}}</td>
+                        <td>{{ teacher.experience_years}}</td>
+                        <td>{{ teacher.date_of_joining}}</td>
+                        <td>{{ teacher.salary}}</td>
+                        <td>
+                            {% if teacher.teacher_id %}
+                            <img src="{{ url_for('teacher_photo', teacher_id=teacher.teacher_id) }}" width="60"
+                                height="60" style="border-radius:50%; object-fit:cover;">
+                            {% else %}
+                            No Image
+                            {% endif %}
+
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-danger btn-sm"
+                                onclick="openPopup('{{teacher.regd_no }}')">
+                                Delete
+                            </button>
+
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+    {% endif %}
+    {% endif %}
+
+</div>
+
+<!-- DELETE POPUP -->
+<div id="popup" style="display:none; position:fixed; inset:0;
+     background:rgba(0,0,0,0.6); justify-content:center; align-items:center;">
+
+    <div style="background:white; padding:20px; width:300px;
+         border-radius:10px; text-align:center;">
+
+        <h5>Are you sure?</h5>
+        <p>This faculty will be deleted permanently.</p>
+
+        <button onclick="closePopup()" class="btn btn-secondary">
+            Cancel
+        </button>
+
+        <form id="deleteForm" method="POST" style="display:inline;">
+            <button type="submit" class="btn btn-danger">
+                Delete
+            </button>
+        </form>
+
+    </div>
+</div>
+
+
+<script>
+
+    const regdField = document.getElementById("regd_no");
+    const nameField = document.getElementById("name");
+
+    const allFields = [regdField, nameField];
+
+    function handleDisable(activeField) {
+        if (activeField.value.trim() !== "") {
+            allFields.forEach(field => {
+                if (field !== activeField) {
+                    field.disabled = true;
+                }
+            });
+        } else {
+            allFields.forEach(field => {
+                field.disabled = false;
+            });
+        }
+    }
+
+
+    regdField.addEventListener("input", () => handleDisable(regdField));
+    nameField.addEventListener("input", () => handleDisable(nameField));
+
+    function openPopup(regdNo) {
+        document.getElementById("popup").style.display = "flex";
+
+        // Set form action dynamically
+        document.getElementById("deleteForm").action =
+            "/final_delete_teacher/" + regdNo;
+    }
+
+    function closePopup() {
+        document.getElementById("popup").style.display = "none";
+    }
+
+</script>
+{% endblock %}

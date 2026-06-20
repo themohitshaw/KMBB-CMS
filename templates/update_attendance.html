@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+        min-height: 100vh;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    /* Page Title */
+
+    .page-title {
+        text-align: center;
+        color: white;
+        font-size: 32px;
+        margin-top: 30px;
+        margin-bottom: 25px;
+    }
+
+    /* Card */
+
+    .form-card {
+        width: 95%;
+        max-width: 750px;
+        margin: auto;
+        padding: 30px;
+        border-radius: 15px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        color: white;
+    }
+
+    /* Inputs */
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 500;
+    }
+
+    .form-group input,
+    .form-group select {
+        width: 100%;
+        padding: 10px;
+        border: none;
+        border-radius: 6px;
+    }
+
+    /* Buttons */
+
+    .btn-main {
+        display: block;
+        margin: auto;
+        padding: 10px 30px;
+        border: none;
+        border-radius: 8px;
+        background: #0d6efd;
+        color: white;
+        font-size: 16px;
+        transition: .3s;
+    }
+
+    .btn-main:hover {
+        background: #084298;
+    }
+
+    /* Attendance Info */
+
+    .attendance-info {
+        margin-top: 25px;
+        background: rgba(255, 255, 255, 0.15);
+        padding: 20px;
+        border-radius: 12px;
+        text-align: center;
+    }
+
+    /* Student Photo */
+
+    .student-photo {
+        width: 90px;
+        height: 90px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid white;
+        margin-bottom: 10px;
+    }
+
+    /* Mobile */
+
+    @media(max-width:480px) {
+
+        .page-title {
+            font-size: 24px;
+        }
+
+        .form-card {
+            padding: 20px;
+        }
+
+        .student-photo {
+            width: 70px;
+            height: 70px;
+        }
+
+    }
+
+    .back-btn {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        background-color: rgba(0, 0, 0, 0.3);
+        color: white;
+        padding: 8px 15px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        z-index: 1000;
+        transition: 0.3s ease;
+    }
+
+    .back-btn:hover {
+        background-color: #444;
+        color: white;
+    }
+</style>
+
+<a href="{{ url_for('attendance_option', subject_id=session['subject_id']) }}" class="back-btn">
+    <i class="fa-solid fa-arrow-left"></i> Back
+</a>
+
+<h2 class="page-title">✏ Update Attendance</h2>
+<!-- FLASH MESSAGES -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for category, message in messages %}
+<div class="alert alert-{{ category }} alert-dismissible fade show text-center" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+
+<div class="form-card">
+
+    <!-- SEARCH FORM -->
+
+    <form method="POST">
+
+        <div class="form-group">
+            <label>Registration Number</label>
+            <input type="text" name="regd_no" placeholder="Enter Registration No" required>
+        </div>
+
+        <div class="form-group">
+            <label>Attendance Date</label>
+            <input type="date" name="attendance_date" max="{{ current_date }}" required>
+        </div>
+
+        <button type="submit" class="btn-main">Search Attendance</button>
+
+    </form>
+
+
+    {% if attendance %}
+
+    <hr style="margin:25px 0;">
+
+    <div class="attendance-info">
+
+        <h3>Attendance Record</h3>
+
+        <!-- STUDENT PHOTO -->
+
+        <img src="{{ url_for('student_photo', student_id=attendance.student_id) }}" width="120">
+
+        <form method="POST" action="{{ url_for('update_status') }}">
+
+            <input type="hidden" name="attendance_id" value="{{ attendance.attendance_id }}">
+
+            <p><b>Regd No :</b> {{ attendance.regd_no }}</p>
+
+            <p><b>Date :</b> {{ attendance.attendance_date }}</p>
+
+            <p><b>Subject :</b> {{ session['subject_name'] }}</p>
+
+            <div class="form-group">
+                <label>Status</label>
+
+                <select name="status">
+
+                    <option value="Present" {% if attendance.status=='Present' %}selected{% endif %}>
+                        Present
+                    </option>
+
+                    <option value="Absent" {% if attendance.status=='Absent' %}selected{% endif %}>
+                        Absent
+                    </option>
+
+                </select>
+
+            </div>
+
+            <button type="submit" class="btn-main">
+                Update Attendance
+            </button>
+
+        </form>
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

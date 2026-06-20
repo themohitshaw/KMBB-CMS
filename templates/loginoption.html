@@ -1,0 +1,87 @@
+{% extends "base.html" %} {% block title %} KMBB-Plus {% endblock %} {% block style %} <style>
+    .login-heading {
+        text-align: center;
+        margin: 4vh;
+        color: black;
+        font-size: 8vh;
+        font-weight: bold;
+    }
+
+    .login-option-div {
+        height: 100%;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        gap: 40px;
+        margin-top: 4vh;
+    }
+
+    .login-option-div a {
+        height: 110px;
+        width: 550px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-decoration: none;
+        font-size: 32px;
+        border-radius: 12px;
+        color: white;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    #student-login-btn,
+    #teacher-login-btn,
+    #institute-login-btn {
+        background: linear-gradient(135deg, rgb(252, 100, 44), rgb(255, 140, 80));
+    }
+
+    /* 🔥 Hover Effect */
+    .login-option-div a:hover {
+        transform: scale(1.07);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+        background: linear-gradient(135deg, rgb(230, 80, 30), rgb(255, 120, 60));
+    }
+
+    /* Mobile Responsive */
+    @media screen and (max-width: 600px) {
+        .login-option-div a {
+            height: 90px;
+            width: 90%;
+            font-size: 22px;
+        }
+
+        .login-heading {
+            font-size: 5vh;
+        }
+    }
+
+    .back-btn {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        background-color: rgba(0, 0, 0, 0.4);
+        color: white;
+        padding: 10px 18px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        z-index: 1000;
+        transition: 0.3s ease;
+    }
+
+    .back-btn:hover {
+        background-color: #222;
+        color: white;
+    }
+</style> {% endblock %} {% block content %} <a href="{{url_for('hello')}}" class="back-btn"> <i
+        class="fa-solid fa-arrow-left"></i> Back </a>
+<h1 class="login-heading">Login</h1>
+<div class="login-option-div"> <a href="{{ url_for('student_login')}}" id="student-login-btn"><i
+            class="fa-solid fa-graduation-cap"></i> Student Login</a> <a href="{{ url_for('teacher_login')}}"
+        id="teacher-login-btn"><i class="fa-solid fa-person-chalkboard"></i> Faculty Login</a> <a
+        href="{{ url_for('institute_login')}}" id="institute-login-btn"> <i class="fa-solid fa-building-columns"></i>
+        Admin Login</a> </div> {% endblock %}

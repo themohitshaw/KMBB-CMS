@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+
+.form-container {
+    max-width: 750px;
+    margin: auto;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(10px);
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 35px rgba(0,0,0,0.2);
+    animation: fadeIn 0.5s ease;
+}
+
+.form-title {
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 25px;
+    color: #ff6a00;
+}
+
+.form-group {
+    margin-bottom: 18px;
+}
+
+.form-control, select, textarea {
+    border-radius: 10px !important;
+    padding: 10px;
+    border: 1px solid #ddd;
+    transition: 0.3s;
+}
+
+.form-control:focus {
+    border-color: #ff6a00;
+    box-shadow: 0 0 8px rgba(255,106,0,0.3);
+}
+
+/* BUTTON */
+.submit-btn {
+    width: 100%;
+    background: linear-gradient(135deg,#ff6a00,#ff3c00);
+    border: none;
+    padding: 12px;
+    color: white;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.submit-btn:hover {
+    transform: scale(1.03);
+    box-shadow: 0 8px 20px rgba(255,106,0,0.4);
+}
+
+/* ANIMATION */
+@keyframes fadeIn {
+    from {opacity:0; transform:translateY(30px);}
+    to {opacity:1; transform:translateY(0);}
+}
+
+/* MOBILE */
+@media (max-width: 450px) {
+    .form-container {
+        padding: 20px;
+    }
+}
+.back-btn {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background: rgba(0, 0, 0, 0.3);
+    color: white;
+    padding: 8px 15px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    z-index: 1000;
+    transition: 0.3s;
+}
+
+.back-btn:hover {
+    background: #444;
+    color: white;
+}
+</style>
+<a href="{{url_for('update_notice')}}" class="back-btn">
+    <i class="fa-solid fa-arrow-left"></i> Back
+</a>
+<!-- FLASH MESSAGES -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for category, message in messages %}
+<div class="alert alert-{{ category }} alert-dismissible fade show text-center" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+<div class="container mt-4">
+
+<div class="form-container">
+
+<div class="form-title"> Update Notice</div>
+
+<form method="POST">
+    {{ form.hidden_tag() }}
+
+    <div class="form-group">
+        {{ form.title.label(class="fw-bold") }}
+        {{ form.title(class="form-control") }}
+    </div>
+
+    <div class="form-group">
+        {{ form.subject.label(class="fw-bold") }}
+        {{ form.subject(class="form-control") }}
+    </div>
+
+    <div class="form-group">
+        {{ form.purpose.label(class="fw-bold") }}
+        {{ form.purpose(class="form-control") }}
+    </div>
+
+    <div class="form-group">
+        {{ form.declared_by.label(class="fw-bold") }}
+        {{ form.declared_by(class="form-control") }}
+    </div>
+
+    <div class="form-group">
+        {{ form.department.label(class="fw-bold") }}
+        {{ form.department(class="form-control") }}
+    </div>
+
+    <div class="form-group">
+        {{ form.description.label(class="fw-bold") }}
+        {{ form.description(class="form-control", rows=4) }}
+    </div>
+
+    <div class="form-group">
+        {{ form.drive_link.label(class="fw-bold") }}
+        {{ form.drive_link(class="form-control") }}
+    </div>
+
+    {{ form.submit(class="submit-btn") }}
+
+</form>
+
+</div>
+
+</div>
+
+{% endblock %}

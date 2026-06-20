@@ -1,0 +1,302 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    /* Wrapper */
+
+    .marks-wrapper {
+        width: 90%;
+        max-width: 1100px;
+        margin: auto;
+        margin-top: 60px;
+    }
+
+    /* Title */
+
+    .page-title {
+        text-align: center;
+        color: white;
+        font-size: 30px;
+        font-weight: 600;
+        margin-bottom: 30px;
+    }
+
+    /* Summary Card */
+
+    .summary-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(12px);
+        padding: 25px;
+        border-radius: 18px;
+        text-align: center;
+        color: white;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Stats */
+
+    .stats {
+        display: flex;
+        justify-content: center;
+        gap: 40px;
+        flex-wrap: wrap;
+        font-size: 17px;
+        margin-bottom: 20px;
+    }
+
+    /* Progress */
+
+    .progress {
+        height: 20px;
+        border-radius: 20px;
+        overflow: hidden;
+        background: #ddd;
+    }
+
+    .progress-bar {
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    /* Table Card */
+
+    .table-card {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        padding: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Table */
+
+    .table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .table {
+        min-width: 500px;
+    }
+
+    /* Hover */
+
+    .table tbody tr:hover {
+        background: #f3f3f3;
+        transform: scale(1.01);
+        transition: 0.3s;
+    }
+
+    /* Badge */
+
+    .badge {
+        padding: 6px 12px;
+        font-size: 13px;
+    }
+
+    /* Back Button */
+
+    .back-btn {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        background-color: rgba(0, 0, 0, 0.3);
+        color: white;
+        padding: 8px 15px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        z-index: 1000;
+        transition: 0.3s ease;
+    }
+
+    .back-btn:hover {
+        background-color: #444;
+        color: white;
+    }
+
+    /* 📱 MOBILE (<= 480px) */
+
+    @media(max-width:480px) {
+
+        .marks-wrapper {
+            width: 95%;
+            margin-top: 50px;
+        }
+
+        .page-title {
+            font-size: 22px;
+        }
+
+        .summary-card {
+            padding: 20px;
+        }
+
+        /* STACK STATS */
+
+        .stats {
+            flex-direction: column;
+            gap: 10px;
+            font-size: 15px;
+        }
+
+        /* ✅ FIX: HIDE FULL TABLE CARD */
+
+        .table-card {
+            display: none;
+        }
+
+        /* MOBILE CARDS */
+
+        .mobile-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .exam-card {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .exam-card div {
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+    }
+
+    /* Hide cards on desktop */
+
+    @media(min-width:481px) {
+        .mobile-cards {
+            display: none;
+        }
+    }
+</style>
+
+<a href="{{url_for('student_subjects_for_exam')}}" class="back-btn">
+    <i class="fa-solid fa-arrow-left"></i> Back
+</a>
+
+<!-- FLASH MESSAGES -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for category, message in messages %}
+<div class="alert alert-{{ category }} alert-dismissible fade show text-center" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+<div class="marks-wrapper">
+
+    <h2 class="page-title">
+        📊 Marks - {{subject.subject_name}}
+    </h2>
+
+    <!-- Summary -->
+
+    <div class="summary-card">
+
+        <div class="stats">
+
+            <div>
+                <b>Total Marks</b><br>
+                {{total_marks}}
+            </div>
+
+            <div>
+                <b>Obtained</b><br>
+                {{total_obtained}}
+            </div>
+
+            <div>
+                <b>Percentage</b><br>
+                {{percentage}}%
+            </div>
+
+        </div>
+
+        <div class="progress">
+            <div class="progress-bar bg-success" style="width: {{percentage}}%;">
+                {{percentage}}%
+            </div>
+        </div>
+
+    </div>
+
+    <!-- TABLE (DESKTOP ONLY) -->
+
+    <div class="table-card">
+        <div class="table-wrapper">
+
+            <table class="table table-bordered text-center">
+
+                <thead>
+                    <tr>
+                        <th>Exam</th>
+                        <th>Marks Obtained</th>
+                        <th>Total Marks</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for r in records %}
+                    <tr>
+                        <td>{{r.exam_name}}</td>
+                        <td>{{r.marks_obtained}}</td>
+                        <td>{{r.total_marks}}</td>
+                        <td>
+                            {% if r.marks_obtained >= (r.total_marks * 0.4) %}
+                            <span class="badge bg-success">Pass</span>
+                            {% else %}
+                            <span class="badge bg-danger">Fail</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
+    <!-- 📱 MOBILE CARDS -->
+
+    <div class="mobile-cards">
+
+        {% for r in records %}
+        <div class="exam-card">
+
+            <div><b>{{r.exam_name}}</b></div>
+            <div>Marks: {{r.marks_obtained}} / {{r.total_marks}}</div>
+
+            <div>
+                Status:
+                {% if r.marks_obtained >= (r.total_marks * 0.4) %}
+                <span class="badge bg-success">Pass</span>
+                {% else %}
+                <span class="badge bg-danger">Fail</span>
+                {% endif %}
+            </div>
+
+        </div>
+        {% endfor %}
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    /* WRAPPER */
+    .notes-wrapper {
+        width: 90%;
+        max-width: 1400px;
+        margin: auto;
+        margin-top: 40px;
+        padding: 20px;
+    }
+
+    /* TITLE */
+    .page-title {
+        text-align: center;
+        color: white;
+        font-size: 28px;
+        margin-bottom: 25px;
+    }
+
+    /* SEARCH FORM */
+    .search-form {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        flex-wrap: wrap;
+        background: rgba(255, 255, 255, 0.08);
+        padding: 15px;
+        border-radius: 12px;
+        margin-bottom: 30px;
+    }
+
+    .search-form input {
+        width: 240px;
+        padding: 10px;
+        border-radius: 8px;
+        border: none;
+    }
+
+    .search-form button {
+        padding: 10px 20px;
+        border-radius: 8px;
+    }
+
+    /* GRID */
+    .notes-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 20px;
+    }
+
+    /* CARD */
+    .note-card {
+        background: rgba(255, 255, 255, 0.95);
+        padding: 20px;
+        border-radius: 16px;
+        text-decoration: none;
+        color: #333;
+        transition: .3s;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .note-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .note-card h3 {
+        margin-bottom: 10px;
+        font-size: 18px;
+    }
+
+    /* STUDENT INFO */
+    .student-info {
+        text-align: center;
+        color: white;
+        margin-bottom: 20px;
+    }
+
+    /* BACK BUTTON */
+    .back-btn {
+        position: fixed;
+        top: 15px;
+        left: 15px;
+        background-color: rgba(0, 0, 0, 0.4);
+        color: white;
+        padding: 8px 14px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        z-index: 1000;
+        transition: 0.3s ease;
+        font-size: 14px;
+    }
+
+    .back-btn:hover {
+        background-color: #222;
+    }
+
+    /* ================= MOBILE FIX ================= */
+    @media(max-width:400px) {
+
+        .notes-wrapper {
+            width: 95%;
+            padding: 15px;
+        }
+
+        .page-title {
+            font-size: 22px;
+        }
+
+        .search-form {
+            flex-direction: column;
+            gap: 12px;
+            padding: 15px;
+        }
+
+        .search-form input {
+            width: 100%;
+            font-size: 14px;
+        }
+
+        .search-form button {
+            width: 100%;
+            font-size: 15px;
+        }
+
+        .notes-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .note-card {
+            padding: 15px;
+        }
+
+        .note-card h3 {
+            font-size: 16px;
+        }
+
+        .student-info {
+            font-size: 14px;
+        }
+
+    }
+</style>
+
+
+<!-- FLASH MESSAGES -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for category, message in messages %}
+<div class="alert alert-{{ category }} alert-dismissible fade show text-center" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+
+<a href="{{url_for('student_data')}}" class="back-btn">
+    <i class="fa-solid fa-arrow-left"></i> Back
+</a>
+
+
+<div class="notes-wrapper">
+
+    <h2 class="page-title">📚 Student Subjects</h2>
+
+    <form method="POST" class="search-form">
+
+        <input type="text" name="regd_no" placeholder="Enter Registration Number" required>
+
+        <button type="submit" class="btn btn-primary">
+            Show Subjects
+        </button>
+
+    </form>
+
+    {% if student %}
+
+    <div class="student-info">
+        <strong>{{ student.name }}</strong> <br>
+        Branch: {{ student.branch }} | Year: {{ student.year }}
+    </div>
+
+    {% endif %}
+
+    {% if subjects %}
+
+    <div class="notes-grid">
+
+        {% for subject in subjects %}
+
+        <a href="{{ url_for('student_attendance', subject_id=subject.subject_id, regd_no=student.regd_no) }}"
+            class="note-card">
+
+            <h3>{{ subject.subject_name }}</h3>
+
+            <div>
+                Subject Code: {{ subject.subject_code }}
+            </div>
+
+        </a>
+
+        {% endfor %}
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

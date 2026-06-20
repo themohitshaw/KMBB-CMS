@@ -1,0 +1,240 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+    .form-container {
+        width: 70%;
+        margin: 40px auto;
+        padding: 35px;
+        background: rgba(255, 255, 255, 0.6);
+        border-radius: 12px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+
+    }
+
+    h2 {
+        text-align: center;
+        margin-bottom: 25px;
+        color: #2c3e50;
+        font-weight: 600;
+    }
+
+    .teacher-info {
+        background: #eef2ff;
+        padding: 12px 15px;
+        border-left: 4px solid #4e73df;
+        border-radius: 6px;
+        margin-bottom: 25px;
+        font-size: 14px;
+        color: #333;
+    }
+
+    .teacher-info span {
+        font-weight: 600;
+        color: #2c3e50;
+    }
+
+    .form-group {
+        margin-bottom: 18px;
+    }
+
+    label {
+        font-weight: 500;
+        margin-bottom: 6px;
+        display: inline-block;
+        color: black;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #dcdcdc;
+        border-radius: 6px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        border-color: #4e73df;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(78, 115, 223, 0.15);
+    }
+
+    textarea.form-control {
+        resize: none;
+    }
+
+    .error-text {
+        color: #e74a3b;
+        font-size: 12px;
+        margin-top: 5px;
+    }
+
+    .submit-btn {
+        padding: 10px 28px;
+        background-color: #4e73df;
+        color: white;
+        border: none;
+        border-radius: 25px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .submit-btn:hover {
+        background-color: #2e59d9;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .text-center {
+        text-align: center;
+        margin-top: 10px;
+    }
+
+    @media screen and (max-width:1000px) {
+        .form-container {
+            width: 90%;
+        }
+
+    }
+
+    .back-btn {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        background-color: rgba(0, 0, 0, 0.3);
+        color: white;
+        padding: 8px 15px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        z-index: 1000;
+        transition: 0.3s ease;
+    }
+
+    .back-btn:hover {
+        background-color: #444;
+        color: white;
+    }
+
+    .top-actions {
+        text-align: right;
+        margin-bottom: 20px;
+    }
+
+    .view-btn {
+        background-color: #28a745;
+        color: white;
+        padding: 8px 18px;
+        border-radius: 20px;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+        transition: 0.3s ease;
+        display: inline-block;
+    }
+
+    .view-btn:hover {
+        background-color: #218838;
+        color: white;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    }
+</style>
+
+<a href="{{url_for('teacher_data')}}" class="back-btn">
+    <i class="fa-solid fa-arrow-left"></i> Back
+</a>
+<div class="form-container">
+
+    <h2>Add Subject Notes</h2>
+
+    <div class="top-actions">
+        <a href="{{ url_for('view_subject_notes') }}" class="view-btn">
+            <i class="fa-solid fa-book-open"></i> View All Notes
+        </a>
+    </div>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="alert alert-{{ category }} alert-dismissible fade show text-center mt-3 w-75 mx-auto" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+    <form method="POST">
+        {{ form.hidden_tag() }}
+
+        <!-- Year -->
+        <div class="form-group">
+            {{ form.year.label }}<br>
+            {{ form.year(class="form-control") }}
+            {% for error in form.year.errors %}
+            <div class="error-text">{{ error }}</div>
+            {% endfor %}
+        </div>
+
+        <!-- Branch -->
+        <div class="form-group">
+            {{ form.branch.label }}<br>
+            {{ form.branch(class="form-control") }}
+            {% for error in form.branch.errors %}
+            <div class="error-text">{{ error }}</div>
+            {% endfor %}
+        </div>
+
+        <!-- Subject Name -->
+        <div class="form-group">
+            {{ form.subject_name.label }}<br>
+            {{ form.subject_name(class="form-control", placeholder="Enter Subject Name") }}
+            {% for error in form.subject_name.errors %}
+            <div class="error-text">{{ error }}</div>
+            {% endfor %}
+        </div>
+
+        <!-- Chapter Name -->
+        <div class="form-group">
+            {{ form.chapter_name.label }}<br>
+            {{ form.chapter_name(class="form-control", placeholder="Enter Chapter Name") }}
+            {% for error in form.chapter_name.errors %}
+            <div class="error-text">{{ error }}</div>
+            {% endfor %}
+        </div>
+
+        <!-- Summary -->
+        <div class="form-group">
+            {{ form.summary(class="form-control", rows="4", placeholder="Write short summary of notes") }}
+            {% for error in form.summary.errors %}
+            <div class="error-text">{{ error }}</div>
+            {% endfor %}
+        </div>
+
+        <div class="teacher-info">
+            <p><strong>Teacher Name:</strong> {{ session.get('teacher_name') }}</p>
+            <p><strong>Teacher ID:</strong> {{ session.get('teacher_regd') }}</p>
+        </div>
+        <!-- Notes Link -->
+        <div class="form-group">
+            {{ form.notes_link.label }}<br>
+            {{ form.notes_link(class="form-control", placeholder="Paste Google Drive / PDF link") }}
+            {% for error in form.notes_link.errors %}
+            <div class="error-text">{{ error }}</div>
+            {% endfor %}
+        </div>
+
+        <!-- Submit -->
+        <div class="text-center">
+            {{ form.submit(class="submit-btn") }}
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

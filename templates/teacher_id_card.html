@@ -1,0 +1,356 @@
+{% extends "base.html" %}
+{% block title %} Teacher ID Card {% endblock %}
+
+{% block style %}
+<style>
+    body {
+        background: linear-gradient(to right, #e0eafc, #cfdef3);
+    }
+
+    /* WRAPPER */
+    .id-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 80px;
+        flex-wrap: wrap;
+        gap: 40px;
+    }
+
+    /* CARD STYLE */
+    .id-card {
+        width: 340px;
+        height: 520px;
+        background: #fff;
+        border-radius: 15px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        padding: 20px;
+        text-align: center;
+        position: relative;
+    }
+
+    /* HEADER */
+    .id-header h3 {
+        margin: 5px 0;
+        color: #0d6efd;
+        font-weight: 700;
+    }
+
+    .id-header p {
+        font-size: 13px;
+        margin-bottom: 8px;
+    }
+
+    /* PHOTO */
+    .id-photo img {
+        width: 120px;
+        height: 140px;
+        object-fit: cover;
+        border-radius: 10px;
+        border: 2px solid #0d6efd;
+    }
+
+    /* NAME */
+    .teacher-name {
+        font-weight: bold;
+        font-size: 18px;
+        color: #0d6efd;
+        margin-top: 10px;
+    }
+
+    /* DETAILS */
+    .id-details {
+        text-align: left;
+        margin-top: 15px;
+        font-size: 14px;
+        margin-left: 40px;
+    }
+
+    .id-details p {
+        margin: 4px 0;
+    }
+
+    .label {
+        font-weight: 600;
+    }
+
+    /* FOOTER */
+    .id-footer {
+        text-align: right;
+        /* position: absolute;
+        bottom: 20px;
+        left: 0;
+        right: 2; */
+        font-weight: bold;
+        color: #0d6efd;
+        margin: 40px;
+    }
+
+    /* BACK SIDE */
+    .instructions-title {
+        font-weight: bold;
+        font-size: 20px;
+        margin-bottom: 15px;
+        margin-top: 20px;
+        text-decoration: underline;
+    }
+
+    .instructions-text {
+        width: 200px;
+        text-align: left;
+        font-size: 14px;
+        line-height: 1.6;
+        margin-left: 55px;
+        margin-top: 20px;
+
+    }
+
+    .back-footer {
+        position: absolute;
+        bottom: 20px;
+        left: 0;
+        right: 0;
+        font-size: 13px;
+        color: #043f97;
+    }
+
+    /* BUTTONS */
+    .btn-container {
+        margin-top: 30px;
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+    }
+
+    /* LOGO SECTION */
+    .logo-section {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+
+    .logo-section img {
+        width: 40px;
+        height: 40px;
+        object-fit: contain;
+    }
+
+    .college-text h3 {
+        margin: 0;
+        color: #043f97;
+        font-weight: 700;
+        text-align: left;
+    }
+
+    .college-text p {
+        margin: 0;
+        font-size: 8px;
+    }
+
+    .card-title {
+        display: block;
+        margin-top: 8px;
+        margin-bottom: 4px;
+        font-size: 16px;
+    }
+
+    #cet-back {
+        font-size: 5px;
+        color: black;
+    }
+
+    /* PRINT SETTINGS */
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+
+        .print-area,
+        .print-area * {
+            visibility: visible;
+        }
+
+        .print-area {
+            position: absolute;
+            left: 0;
+            top: 0;
+            display: flex;
+            gap: 30px;
+        }
+
+        .btn-container {
+            display: none;
+        }
+    }
+
+    @media (max-width: 900px) {
+        .id-wrapper {
+            flex-direction: column;
+        }
+    }
+
+    @media (max-width: 360px) {
+        .id-card {
+            width: 300px;
+            height: 520px;
+        }
+
+
+        .instructions-text {
+            margin-left: 35px;
+        }
+    }
+
+    @media (max-width: 315px) {
+        .id-card {
+            width: 200px;
+            height: 520px;
+        }
+
+        .instructions-text {
+            width: 100%;
+            margin-left: 0px;
+            margin-top: 2px;
+        }
+
+        .instructions-title {
+            margin-top: 0px;
+            margin-bottom: 5px;
+        }
+
+        .id-details {
+            text-align: left;
+            margin-top: 15px;
+            font-size: 14px;
+            margin-left: 1px;
+            overflow: hidden;
+        }
+        .id-footer {
+        text-align: right;
+        /* position: absolute;
+        bottom: 20px;
+        left: 0;
+        right: 2; */
+        font-weight: bold;
+        color: #0d6efd;
+        margin: 10px;
+    }
+    }
+
+    .back-btn {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        background-color: rgba(0, 0, 0, 0.3);
+        color: white;
+        padding: 8px 15px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        z-index: 1000;
+        transition: 0.3s ease;
+    }
+
+    .back-btn:hover {
+        background-color: #444;
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<a href="{{url_for('teacher_data')}}" class="back-btn">
+    <i class="fa-solid fa-arrow-left"></i> Back
+</a>
+
+<div class="print-area">
+    <div class="id-wrapper">
+
+        <!-- FRONT SIDE -->
+        <div class="id-card" id="frontCard">
+            <div class="id-header">
+
+                <div class="logo-section">
+                    <img src="{{ url_for('static', filename='images/kmbb_logo_png.png') }}" alt="KMBB Logo">
+                    <div class="college-text">
+                        <h3>KMBB</h3>
+                        <p>College of Engineering & Technology</p>
+                    </div>
+                </div>
+
+                <strong class="card-title">Teacher ID Card</strong>
+
+            </div>
+
+
+            <div class="id-photo">
+                <img src="{{ url_for('teacher_photo', teacher_id=teacher.teacher_id) }}">
+            </div>
+
+            <div class="teacher-name">
+                {{ teacher.full_name }}
+            </div>
+
+            <div class="id-details">
+                <p><span class="label">Regd No:</span> {{ teacher.regd_no }}</p>
+                <p><span class="label">Department:</span> {{ teacher.department }}</p>
+                <p><span class="label">Designation:</span> {{ teacher.designation }}</p>
+                <p><span class="label">Mobile:</span> {{ teacher.phone }}</p>
+                <p><span class="label">Email:</span> {{ teacher.email }}</p>
+            </div>
+
+            <div class="id-footer">
+                Principal
+            </div>
+
+        </div>
+
+        <!-- BACK SIDE -->
+        <div class="id-card" id="backCard">
+
+            <div class="instructions-title">
+                INSTRUCTIONS
+            </div>
+
+            <div class="instructions-text">
+                <p>1. Teacher must carry this card.</p>
+                <p>2. Any one finding this card is requested to send it to the principal at address mentioned in this
+                    card.</p>
+                <p>3. The card holder whose details given overleaf is a bonafide teacher of KMBB College of Engineering
+                    & Technology.</p>
+            </div>
+
+            <div class="back-footer">
+
+                <div class="logo-section">
+                    <img src="{{ url_for('static', filename='images/kmbb_logo_png.png') }}" alt="KMBB Logo">
+                    <div class="college-text">
+                        <h3>KMBB</h3>
+                        <p id="cet-back">College of Engineering & Technology</p>
+                    </div>
+                </div>
+
+                <!-- <strong>KMBB</strong><br> -->
+                At:- Daleiput, Khordha<br>
+                Bhubaneswar, PIN:- 752056<br>
+                www.kmbb.in
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<!-- BUTTONS -->
+<div class="btn-container">
+    <button class="btn btn-primary" onclick="window.print()">Print</button>
+</div>
+
+
+
+
+
+{% endblock %}

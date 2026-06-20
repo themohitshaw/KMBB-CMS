@@ -1,0 +1,267 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    /* BACKGROUND */
+    body {
+        background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+        min-height: 100vh;
+    }
+
+    /* PAGE WRAPPER */
+    .page-wrapper {
+        width: 95%;
+        max-width: 1400px;
+        margin: 40px auto;
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(12px);
+        padding: 20px;
+        border-radius: 15px;
+    }
+
+    /* TITLE */
+    .page-title {
+        text-align: center;
+        font-size: 26px;
+        font-weight: 700;
+        color: white;
+    }
+
+    /* SUBJECT INFO */
+    .subject-info {
+        text-align: center;
+        margin: 15px 0;
+        color: white;
+        font-size: 14px;
+    }
+
+    /* TABLE */
+    .student-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    /* HEADER */
+    .student-table th {
+        background: linear-gradient(135deg, #1c3b45, #2c5364);
+        color: white;
+        padding: 12px;
+        font-size: 14px;
+    }
+
+    /* CELLS */
+    .student-table td {
+        padding: 10px;
+        text-align: center;
+        color: white;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    /* PHOTO */
+    .student-photo {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+    }
+
+    /* INPUT */
+    .marks-input {
+        width: 70px;
+        padding: 6px;
+        border-radius: 6px;
+        border: none;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    /* BUTTON */
+    .submit-btn {
+        margin-top: 20px;
+        padding: 10px 25px;
+        border-radius: 20px;
+        border: none;
+        background: linear-gradient(45deg, #00c6ff, #0072ff);
+        color: white;
+    }
+
+    /* BACK BUTTON */
+    .back-btn {
+        position: fixed;
+        top: 15px;
+        left: 15px;
+        color: white;
+        text-decoration: none;
+    }
+
+    /* ================= MOBILE FIX ================= */
+    @media(max-width: 500px) {
+
+        /* HIDE TABLE HEADER */
+        .student-table thead {
+            display: none;
+        }
+
+        /* MAKE ROW AS CARD */
+        .student-table,
+        .student-table tbody,
+        .student-table tr,
+        .student-table td {
+            display: block;
+            width: 100%;
+        }
+
+        .student-table tr {
+            background: rgba(255, 255, 255, 0.08);
+            margin-bottom: 12px;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .student-table td {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px;
+            font-size: 13px;
+        }
+
+        /* LABELS */
+        .student-table td:nth-child(1)::before {
+            content: "Photo";
+        }
+
+        .student-table td:nth-child(2)::before {
+            content: "Regd No";
+        }
+
+        .student-table td:nth-child(3)::before {
+            content: "Name";
+        }
+
+        .student-table td:nth-child(4)::before {
+            content: "Marks";
+        }
+
+        .student-table td::before {
+            font-weight: bold;
+            color: #ddd;
+        }
+
+        /* IMAGE FIX */
+        .student-photo {
+            width: 40px;
+            height: 40px;
+        }
+
+        /* INPUT FIX */
+        .marks-input {
+            width: 60px;
+        }
+
+    }
+
+
+
+
+    .back-btn {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        background-color: rgba(0, 0, 0, 0.3);
+        color: white;
+        padding: 8px 15px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        z-index: 1000;
+        transition: 0.3s ease;
+    }
+
+    .back-btn:hover {
+        background-color: #444;
+        color: white;
+    }
+</style>
+
+<a href="{{ url_for('internal_subjects') }}" class="back-btn">
+    <i class="fa-solid fa-arrow-left"></i> Back
+</a>
+<!-- FLASH MESSAGES -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for category, message in messages %}
+<div class="alert alert-{{ category }} alert-dismissible fade show text-center" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+<div class="page-wrapper">
+
+    <div class="page-title">
+        📊 Enter Internal Marks
+    </div>
+
+    <div class="subject-info">
+        <b>Year:</b> {{year}} <br>
+        <b>Branch:</b> {{branch}} <br>
+        <b>Subject:</b> {{subject_name}} <br>
+        <b>Total Students:</b> {{total_students}}
+    </div>
+
+    <form method="POST">
+
+        <table class="student-table">
+
+            <thead>
+                <tr>
+                    <th>Photo</th>
+                    <th>Regd No</th>
+                    <th>Name</th>
+                    <th>Marks (0-30)</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for student in students %}
+
+                <tr>
+
+                    <td>
+                        <img src="{{ url_for('student_photo', student_id=student.student_id) }}" class="student-photo">
+                    </td>
+
+                    <td>{{student.regd_no}}</td>
+
+                    <td>{{student.name}}</td>
+
+                    <td>
+                        <input type="number" name="marks_{{student.regd_no}}" class="marks-input" min="0" max="30"
+                            step="1" placeholder="-" oninput="limitMarks(this)" required>
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+        <div style="text-align:center">
+            <button type="submit" class="submit-btn">Submit Marks</button>
+        </div>
+
+    </form>
+
+</div>
+
+<script>
+    function limitMarks(input) {
+        if (input.value > 30) input.value = 30;
+        if (input.value < 0) input.value = 0;
+    }
+</script>
+
+{% endblock %}

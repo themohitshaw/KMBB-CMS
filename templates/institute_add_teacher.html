@@ -1,0 +1,271 @@
+{% extends "base.html" %}
+
+{% block title %} Add Teacher {% endblock %}
+
+{% block style %}
+<style>
+    .form-card {
+        width: 100%;
+        max-width: 1000px;
+        margin: auto;
+        /* 👈 ADD THIS */
+        background-color: rgba(255, 255, 255, 0.6);
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    }
+
+
+    .form-card h2 {
+        text-align: center;
+        margin-bottom: 25px;
+        color: black;
+    }
+
+    /* GRID */
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+
+    .full-width {
+        grid-column: span 2;
+    }
+
+    /* FORM GROUP */
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group label {
+        margin-bottom: 6px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        background-color: white;
+        padding: 10px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        font-size: 15px;
+        outline: none;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+        border-color: #198754;
+    }
+
+    /* ✅ BUTTON SAME AS STUDENT PAGE */
+    .submit-btn {
+        width: 100%;
+        padding: 12px;
+        background-color: #198754;
+        border: none;
+        color: white;
+        font-size: 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        margin-top: 20px;
+    }
+
+    .submit-btn:hover {
+        background-color: #146c43;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .full-width {
+            grid-column: span 1;
+        }
+
+        .form-card {
+            padding: 20px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .full-width {
+            grid-column: span 1;
+        }
+    }
+
+    @media (max-width: 400px) {
+        .form-card {
+            padding: 15px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            font-size: 14px;
+        }
+    }
+
+    .back-btn {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        background-color: rgba(0, 0, 0, 0.3);
+        color: white;
+        padding: 8px 15px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        z-index: 1000;
+        transition: 0.3s ease;
+    }
+
+    .back-btn:hover {
+        background-color: #444;
+        color: white;
+    }
+</style>
+{% endblock %}
+
+
+
+{% block content %}
+<a href="{{url_for('institute_data')}}" class="back-btn">
+    <i class="fa-solid fa-arrow-left"></i> Back
+</a>
+
+<!-- 🔔 FLASH MESSAGES START -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for category, message in messages %}
+<div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+<!-- 🔔 FLASH MESSAGES END -->
+<div class="container d-flex justify-content-center align-items-center py-5">
+
+    <div class="form-card">
+
+        <h2>Add Faculty</h2>
+
+        <form method="POST" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    {{ form.regd_no.label }}
+                    {{ form.regd_no }}
+                </div>
+
+                <div class="form-group">
+                    {{ form.full_name.label }}
+                    {{ form.full_name }}
+                </div>
+
+                <div class="form-group">
+                    {{ form.aadhaar.label }}
+                    {{ form.aadhaar }}
+                </div>
+
+                <div class="form-group">
+                    {{ form.gender.label }}
+                    {{ form.gender }}
+                </div>
+
+                <div class="form-group">
+                    {{ form.date_of_birth.label }}
+                    {{ form.date_of_birth }}
+                </div>
+
+                <div class="form-group">
+                    {{ form.blood_group.label }}
+                    {{ form.blood_group }}
+                </div>
+
+                <div class="form-group">
+                    {{ form.phone.label }}
+                    {{ form.phone }}
+                </div>
+
+                <div class="form-group">
+                    {{ form.email.label }}
+                    {{ form.email }}
+                </div>
+
+                <div class="form-group full-width">
+                    {{ form.address.label }}
+                    {{ form.address }}
+                </div>
+
+                <div class="form-group">
+                    {{ form.designation.label }}
+                    {{ form.designation }}
+                </div>
+
+                <div class="form-group">
+                    {{ form.qualification.label }}
+                    {{ form.qualification }}
+                </div>
+
+                <div class="form-group">
+                    {{ form.department.label }}
+                    {{ form.department }}
+                </div>
+
+                <div class="form-group">
+                    {{ form.experience_years.label }}
+                    {{ form.experience_years }}
+                </div>
+
+                <div class="form-group">
+                    {{ form.date_of_joining.label }}
+                    {{ form.date_of_joining }}
+                </div>
+
+                <div class="form-group">
+                    {{ form.salary.label }}
+                    {{ form.salary }}
+                </div>
+
+                <div class="form-group">
+                    {{ form.photo.label }}
+                    {{ form.photo }}
+                </div>
+
+            </div>
+
+            <button type="submit" class="submit-btn">
+                <i class="fa-solid fa-chalkboard-user"></i>
+                Add Faculty
+            </button>
+
+
+        </form>
+    </div>
+
+</div>
+
+{% endblock %}

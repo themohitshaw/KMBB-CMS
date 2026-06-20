@@ -1,0 +1,333 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+
+/* ===== GLOBAL ===== */
+.container-custom {
+    width: 100%;
+    padding: 15px;
+}
+
+/* ===== TITLE ===== */
+.page-title {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 20px 0;
+}
+
+/* ===== SEARCH BOX ===== */
+.search-wrapper {
+    display: flex;
+    justify-content: center;
+}
+
+.search-box {
+    display: flex;
+    width: 100%;
+    max-width: 600px;
+    background: white;
+    border-radius: 40px;
+    padding: 6px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    gap: 8px;
+}
+
+/* INPUT */
+.search-box input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 12px 15px;
+    border-radius: 40px;
+    font-size: 0.95rem;
+}
+
+/* BUTTON */
+.search-btn {
+    padding: 10px 18px;
+    border-radius: 40px;
+    border: none;
+    background: #007bff;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.search-btn:hover {
+    background: #0056d2;
+}
+
+/* ===== CARD ===== */
+.notice-card,
+.no-notice-card {
+    width: 100%;
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 18px;
+    border-radius: 12px;
+    background: white;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+
+.notice-card h4 {
+    font-size: 1.2rem;
+    word-break: break-word;
+}
+
+/* ===== BUTTONS ===== */
+.action-buttons {
+    margin-top: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.btn-delete {
+    background: red;
+    color: white;
+    padding: 8px 14px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.btn-cancel {
+    background: gray;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 8px;
+    text-decoration: none;
+}
+
+/* ===== NO NOTICE ===== */
+.no-notice-card {
+    text-align: center;
+}
+
+.no-notice-card h5 {
+    color: red;
+}
+
+/* ===== MODAL ===== */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+}
+
+.modal-box {
+    width: 100%;
+    max-width: 320px;
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.modal-actions {
+    margin-top: 15px;
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.modal-actions form {
+    flex: 1;
+}
+
+.cancel-btn,
+.delete-btn {
+    width: 100%;
+    padding: 8px;
+    border-radius: 8px;
+    border: none;
+    color: white;
+}
+
+.cancel-btn {
+    background: gray;
+}
+
+.delete-btn {
+    background: red;
+}
+
+/* ===== MOBILE FIX ===== */
+@media (max-width: 500px) {
+
+    .page-title {
+        font-size: 1.5rem;
+    }
+
+    .search-box {
+        flex-direction: column;
+        border-radius: 12px;
+        padding: 10px;
+    }
+
+    .search-box input {
+        width: 100%;
+        background: #f5f5f5;
+    }
+
+    .search-box .search-btn {
+        width: 100%;
+        background-color: #007bff;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+    }
+
+}
+
+/* EXTRA SMALL (300px) */
+@media (max-width: 350px) {
+
+    .search-box input {
+        font-size: 0.8rem;
+    }
+
+    .search-box .search-btn {
+        font-size: 0.8rem;
+        padding: 8px;
+        background-color: #007bff;
+    }
+
+}
+.back-btn {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background: rgba(0, 0, 0, 0.3);
+    color: white;
+    padding: 8px 15px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    z-index: 1000;
+    transition: 0.3s;
+}
+
+.back-btn:hover {
+    background: #444;
+    color: white;
+}
+</style>
+<a href="{{ url_for('institute_data') }}" class="back-btn">
+    <i class="fa-solid fa-arrow-left"></i> Back
+</a>
+
+<!-- 🔔 FLASH MESSAGES START -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for category, message in messages %}
+<div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+<!-- 🔔 FLASH MESSAGES END -->
+<div class="container-custom">
+
+<div class="page-title">🗑 Delete Notice</div>
+
+<!-- SEARCH -->
+<div class="search-wrapper">
+    <form method="POST" class="search-box">
+        {{ form.hidden_tag() }}
+        {{ form.notice_number(id="noticeInput", placeholder="Enter Notice Number") }}
+        {{ form.submit(class="search-btn") }}
+    </form>
+</div>
+
+<!-- RESULT -->
+<div id="resultSection">
+
+{% if searched %}
+
+    {% if notice %}
+
+        <div class="notice-card">
+            <h4>{{ notice.notice_number }}</h4>
+            <p>{{ notice.title }}</p>
+            <p>{{ notice.description }}</p>
+
+            <div class="action-buttons">
+                <button class="btn-delete" onclick="openModal()">Delete</button>
+                <a href="{{ url_for('delete_notice') }}" class="btn-cancel">Cancel</a>
+            </div>
+        </div>
+
+    {% else %}
+
+        <div class="no-notice-card">
+            <h5>Notice Not Found</h5>
+            <p>Please check and try again.</p>
+        </div>
+
+    {% endif %}
+
+{% endif %}
+
+</div>
+
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
+    <div class="modal-box">
+
+        <h3>Are you sure?</h3>
+        <p>This notice will be deleted permanently.</p>
+
+        <div class="modal-actions">
+            <button class="cancel-btn" onclick="closeModal()">Cancel</button>
+
+            <form method="POST">
+                {{ confirm_form.hidden_tag() }}
+                <input type="hidden" name="notice_number" value="{{ notice.notice_number if notice else '' }}">
+                {{ confirm_form.confirm(class="delete-btn") }}
+            </form>
+        </div>
+
+    </div>
+</div>
+
+<script>
+
+function openModal() {
+    document.getElementById("modal").style.display = "flex";
+}
+
+function closeModal() {
+    document.getElementById("modal").style.display = "none";
+}
+
+/* HIDE RESULT WHEN INPUT EMPTY */
+const input = document.getElementById("noticeInput");
+const result = document.getElementById("resultSection");
+
+input.addEventListener("input", function () {
+    if (this.value.trim() === "") {
+        result.style.display = "none";
+    } else {
+        result.style.display = "block";
+    }
+});
+
+</script>
+
+{% endblock %}

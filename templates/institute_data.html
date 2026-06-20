@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+
+{% block title %} Institute Data {% endblock %}
+
+{% block style %}
+<style>
+    /* ===== FIX PARENT ===== */
+    .div-container {
+        display: block !important;
+    }
+
+    /* ===== GRID WRAPPER ===== */
+    .institute-data-wrapper {
+        width: 100%;
+        max-width: 1200px;
+        margin: 20px auto;
+        display: grid;
+        grid-template-columns: 1fr;
+        /* default small screen */
+        gap: 20px;
+        padding: 30px 15px;
+        /* background: rgba(255, 255, 255, 0.6); */
+        border-radius: 15px;
+    }
+
+    /* ===== SECTION ===== */
+    .institute-data-option-div {
+        padding: 40px 10px;
+        background-color: rgba(255, 255, 255, 0.6);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 18px;
+        border-radius: 10px;
+    }
+
+    /* ===== HEADING ===== */
+    .section-heading {
+        font-size: clamp(18px, 3vw, 26px);
+        font-weight: bold;
+        color: black;
+        text-align: center;
+    }
+
+    /* ===== BUTTON ===== */
+    .data-btn {
+        width: 100%;
+        max-width: 300px;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+
+        padding: 12px 16px;
+        min-height: 72px;
+
+        font-size: clamp(12px, 2.5vw, 16px);
+        font-weight: 600;
+
+        color: white;
+        text-decoration: none;
+
+        border-radius: 12px;
+        background: linear-gradient(135deg, #ff6a2b, #ff8c50);
+
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
+        transition: all 0.25s ease;
+    }
+
+    /* Hover */
+    .data-btn:hover {
+        transform: translateY(-3px) scale(1.02);
+        background: linear-gradient(135deg, #ff7a3c, #ffa36c);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+    }
+
+    /* Click */
+    .data-btn:active {
+        transform: scale(0.97);
+    }
+
+    /* ===== RESPONSIVE GRID ===== */
+    @media (min-width: 400px) {
+        .institute-data-wrapper {
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        }
+    }
+
+    /* ===== SMALL DEVICES ===== */
+    @media (max-width: 350px) {
+
+        .institute-data-wrapper {
+            padding: 20px 10px;
+            gap: 15px;
+        }
+
+        .data-btn {
+            padding: 10px;
+            min-height: 48px;
+            font-size: 12px;
+        }
+    }
+
+    /* ===== ULTRA SMALL ===== */
+    @media (max-width: 300px) {
+
+        .section-heading {
+            font-size: 16px;
+        }
+
+        .data-btn {
+            font-size: 11px;
+            padding: 8px;
+        }
+    }
+
+    /* ===== BACK BUTTON ===== */
+    .back-btn {
+        position: fixed;
+        top: 15px;
+        left: 15px;
+        background-color: rgba(0, 0, 0, 0.4);
+        color: white;
+        padding: 8px 14px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-size: 14px;
+        z-index: 1000;
+        transition: 0.3s;
+    }
+
+    .back-btn:hover {
+        background-color: #222;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<a href="{{url_for('institute_login')}}" class="back-btn">
+    <i class="fa-solid fa-arrow-left"></i> Back
+</a>
+
+<div class="institute-data-wrapper">
+
+    <!-- Student -->
+    <div class="institute-data-option-div">
+        <h2 class="section-heading">Student</h2>
+        <a href="{{ url_for('institute_add_student')}}" class="data-btn"><i class="fa-solid fa-address-book"></i> Add
+            Student</a>
+        <a href="{{ url_for('institute_update_student') }}" class="data-btn"><i class="fa-solid fa-file-pen"></i> Update
+            Student</a>
+        <a href="{{ url_for('institute_view_student')}}" class="data-btn"><i class="fa-solid fa-eye"></i> View
+            Student</a>
+        <a href="{{ url_for('institute_delete_student')}}" class="data-btn"><i class="fa-solid fa-calendar-xmark"></i>
+            Delete Student</a>
+    </div>
+
+    <!-- Faculty -->
+    <div class="institute-data-option-div">
+        <h2 class="section-heading">Faculty</h2>
+        <a href="{{ url_for('institute_add_teacher')}}" class="data-btn"><i class="fa-solid fa-address-book"></i> Add
+            Faculty</a>
+        <a href="{{url_for('institute_update_teacher')}}" class="data-btn"><i class="fa-solid fa-file-pen"></i> Update
+            Faculty</a>
+        <a href="{{ url_for('institute_view_teacher')}}" class="data-btn"><i class="fa-solid fa-eye"></i> View
+            Faculty</a>
+        <a href="{{url_for('institute_delete_teacher')}}" class="data-btn"><i class="fa-solid fa-calendar-xmark"></i>
+            Delete Faculty</a>
+    </div>
+
+    <!-- Notice -->
+    <div class="institute-data-option-div">
+        <h2 class="section-heading">Notice</h2>
+        <a href="{{ url_for('add_notice') }}" class="data-btn"><i class="fa-solid fa-address-book"></i> Add Notice</a>
+        <a href="{{ url_for('update_notice') }}" class="data-btn"><i class="fa-solid fa-file-pen"></i> Update Notice</a>
+        <a href="{{ url_for('view_notice') }}" class="data-btn"><i class="fa-solid fa-eye"></i> View Notice</a>
+        <a href="{{ url_for('delete_notice') }}" class="data-btn"><i class="fa-solid fa-calendar-xmark"></i> Delete
+            Notice</a>
+    </div>
+
+</div>
+
+{% endblock %}

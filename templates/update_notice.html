@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+
+/* ===== TITLE ===== */
+.page-title {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 30px 0;
+}
+
+/* ===== SEARCH WRAPPER ===== */
+.search-wrapper {
+    display: flex;
+    justify-content: center;
+}
+
+/* ===== SEARCH BOX (LIKE DELETE PAGE) ===== */
+.search-box {
+    display: flex;
+    align-items: center;
+    width: 700px;
+    max-width: 95%;
+    background: rgba(255,255,255,0.85);
+    border-radius: 50px;
+    padding: 6px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    backdrop-filter: blur(8px);
+    transition: 0.3s;
+}
+
+.search-box:focus-within {
+    transform: scale(1.02);
+}
+
+/* INPUT */
+.search-box input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 14px 18px;
+    border-radius: 50px;
+    font-size: 1rem;
+    background: transparent;
+}
+
+/* BLUE BUTTON */
+.search-box .search-btn {
+    margin-left: 8px;
+    padding: 12px 35px;
+    border-radius: 50px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.search-btn:hover {
+    background-color: #0056d2;
+}
+
+/* ===== CARD ===== */
+.notice-card {
+    max-width: 700px;
+    margin: 30px auto;
+    padding: 20px;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.9);
+    backdrop-filter: blur(6px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    animation: fadeUp 0.4s ease;
+}
+
+.notice-card h5 {
+    font-weight: 600;
+}
+
+/* UPDATE BUTTON */
+.update-btn {
+    background: #ffc107;
+    padding: 8px 16px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: black;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.update-btn:hover {
+    background: #e0a800;
+}
+
+/* ===== NO DATA CARD ===== */
+.no-notice-card {
+    max-width: 700px;
+    margin: 30px auto;
+    padding: 25px;
+    border-radius: 14px;
+    text-align: center;
+    background: rgba(255,255,255,0.9);
+    backdrop-filter: blur(6px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.no-notice-card h5 {
+    color: #e63946;
+    font-weight: 700;
+}
+
+.no-notice-card p {
+    color: #555;
+}
+
+/* BACK BUTTON */
+.back-btn {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background: rgba(0,0,0,0.3);
+    color: white;
+    padding: 8px 15px;
+    border-radius: 8px;
+    text-decoration: none;
+}
+
+.back-btn:hover {
+    background: #444;
+}
+
+/* ===== ANIMATION ===== */
+@keyframes fadeUp {
+    from {opacity:0; transform:translateY(20px);}
+    to {opacity:1; transform:translateY(0);}
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 500px) {
+
+    .search-box {
+        flex-direction: column;
+        border-radius: 15px;
+        padding: 10px;
+        gap: 10px;
+    }
+
+    .search-box input {
+        width: 100%;
+        background: #f1f1f1;
+    }
+
+    .search-btn {
+        width: 100%;
+        border-radius: 10px;
+        background-color: #007bff;
+    }
+}
+
+</style>
+
+<!-- BACK BUTTON -->
+<a href="{{url_for('institute_data')}}" class="back-btn">
+    <i class="fa-solid fa-arrow-left"></i> Back
+</a>
+
+<!-- FLASH -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for category, message in messages %}
+<div class="alert alert-{{ category }} text-center">
+    {{ message }}
+</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+
+<div class="container">
+
+<div class="page-title">✏️ Update Notice</div>
+
+<!-- SEARCH -->
+<div class="search-wrapper">
+<form method="POST" class="search-box">
+    {{ form.hidden_tag() }}
+    {{ form.notice_number(placeholder="Enter Notice Number") }}
+    {{ form.submit(class="search-btn") }}
+</form>
+</div>
+
+<!-- RESULTS -->
+{% if searched %}
+
+    {% if notices %}
+
+        {% for notice in notices %}
+        <div class="notice-card">
+
+            <h5>{{ notice.notice_number }} - {{ notice.title }}</h5>
+
+            <p>{{ notice.description }}</p>
+
+            <a href="{{ url_for('final_update_notice', notice_number=notice.notice_number) }}"
+               class="update-btn">Update</a>
+
+        </div>
+        {% endfor %}
+
+    {% else %}
+
+        <div class="no-notice-card">
+            <h5>⚠️ Notice Not Found</h5>
+            <p>Please check the notice number and try again</p>
+        </div>
+
+    {% endif %}
+
+{% endif %}
+
+</div>
+
+{% endblock %}

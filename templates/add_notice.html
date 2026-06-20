@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    /* Glass Card */
+    .notice-form-container {
+        width: 90%;
+        max-width: 1100px;
+        /* 🔥 wider for big screens */
+        margin: 50px auto;
+        padding: 40px;
+        border-radius: 15px;
+        background: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        animation: fadeSlide 0.6s ease;
+    }
+
+    /* Heading */
+    .notice-form-container h2 {
+        text-align: center;
+        font-weight: bold;
+        margin-bottom: 25px;
+        color: #333;
+    }
+
+    /* Grid Layout */
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    /* Full width fields */
+    .full-width {
+        grid-column: span 2;
+    }
+
+    /* Input fields */
+    .form-control,
+    select {
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    /* Focus animation */
+    .form-control:focus,
+    select:focus {
+        border-color: rgb(252, 100, 44);
+        box-shadow: 0 0 8px rgba(252, 100, 44, 0.4);
+        transform: scale(1.02);
+    }
+
+    /* Labels */
+    label {
+        font-weight: 500;
+        margin-bottom: 5px;
+    }
+
+    /* Button */
+    .btn-success {
+        width: 100%;
+        height: 45px;
+        font-size: 18px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, rgb(252, 100, 44), rgb(255, 140, 80));
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+    /* Button hover */
+    .btn-success:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Checkbox spacing */
+    .form-check {
+        margin-top: 10px;
+    }
+
+    /* Animation */
+    @keyframes fadeSlide {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .full-width {
+            grid-column: span 1;
+        }
+
+        .notice-form-container {
+            padding: 20px;
+            margin: 20px;
+        }
+
+    }
+
+
+    .back-btn {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        background-color: rgba(0, 0, 0, 0.3);
+        color: white;
+        padding: 8px 15px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        z-index: 1000;
+        transition: 0.3s ease;
+    }
+
+    .back-btn:hover {
+        background-color: #444;
+        color: white;
+    }
+</style>
+<a href="{{url_for('institute_data')}}" class="back-btn">
+    <i class="fa-solid fa-arrow-left"></i> Back
+</a>
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for category, message in messages %}
+<div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+
+<div class="notice-form-container">
+    <h2>📢 Add Notice</h2>
+
+    <form method="POST">
+        {{ form.hidden_tag() }}
+
+        <div class="form-grid">
+
+            <div>
+                <label>Notice Number</label>
+                {{ form.notice_number(class="form-control") }}
+            </div>
+
+            <div>
+                <label>Title</label>
+                {{ form.title(class="form-control") }}
+            </div>
+
+            <div>
+                <label>Subject</label>
+                {{ form.subject(class="form-control") }}
+            </div>
+
+            <div>
+                <label>Purpose</label>
+                {{ form.purpose(class="form-control") }}
+            </div>
+
+            <div class="full-width">
+                <label>Description</label>
+                {{ form.description(class="form-control", rows=4) }}
+            </div>
+
+            <div>
+                <label>Drive Link</label>
+                {{ form.drive_link(class="form-control") }}
+            </div>
+
+            <div>
+                <label>Declared By</label>
+                {{ form.declared_by(class="form-control") }}
+            </div>
+
+            <div>
+                <label>Department</label>
+                {{ form.department(class="form-control") }}
+            </div>
+
+        </div>
+
+        <div class="form-check mt-3">
+            {{ form.is_active(class="form-check-input") }}
+            <label class="form-check-label">Active</label>
+        </div>
+
+        <button type="submit" class="btn btn-success mt-3">
+            🚀 Submit Notice
+        </button>
+    </form>
+</div>
+
+{% endblock %}

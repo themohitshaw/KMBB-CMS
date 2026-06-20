@@ -1,0 +1,242 @@
+{% extends "base.html" %}
+
+{% block title %} Institute | View Students {% endblock %}
+
+{% block style %}
+<style>
+    .search-wrapper {
+        width: 100%;
+        max-width: 1200px;
+        background: rgba(0, 0, 0, 0.75);
+        padding: 30px;
+        border-radius: 14px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        margin: 50px 0px;
+    }
+
+    .search-title {
+        color: #fff;
+        text-align: center;
+        font-weight: 600;
+        margin-bottom: 25px;
+    }
+
+    .form-label {
+        color: #ddd;
+        font-size: 14px;
+    }
+
+    .form-control {
+        border-radius: 8px;
+        font-size: 14px;
+    }
+
+    .btn-search {
+        background: #0d6efd;
+        color: #fff;
+        border-radius: 8px;
+        padding: 10px 30px;
+        font-weight: 500;
+    }
+
+    .btn-search:hover {
+        background: #084298;
+    }
+
+    .table-container {
+        margin-top: 30px;
+    }
+
+    table th {
+        background: linear-gradient(to right, #111827, #1f2933);
+        font-weight: 500;
+        font-size: 14px;
+    }
+
+    table td {
+        font-size: 14px;
+    }
+
+    @media (max-width: 768px) {
+        .search-wrapper {
+            padding: 20px;
+        }
+    }
+
+    .back-btn {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        background-color:rgba(0, 0, 0, 0.3);
+        color: white;
+        padding: 8px 15px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        z-index: 1000;
+        transition: 0.3s ease;
+    }
+
+    .back-btn:hover {
+        background-color: #444;
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<a href="{{url_for('institute_data')}}" class="back-btn">
+    <i class="fa-solid fa-arrow-left"></i> Back
+</a>
+
+<!-- Flash Messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+    {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show text-center mt-3 w-75 mx-auto" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+{% endwith %}
+
+
+
+
+<div class="search-wrapper">
+
+    <h4 class="search-title">
+        <i class="fa-solid fa-users"></i> Search Student Records
+    </h4>
+
+    <!-- SEARCH FORM -->
+    <form method="POST">
+        {{ form.hidden_tag() }}
+
+        <div class="row g-3">
+
+            <!-- SEARCH BY YEAR -->
+            <div class="col-md-6">
+                {{ form.year.label(class="form-label") }}
+                {{ form.year(class="form-control" , id="year") }}
+            </div>
+
+            <!-- SEARCH BY BRANCH -->
+            <div class="col-md-6">
+                {{ form.branch.label(class="form-label") }}
+                {{ form.branch(class="form-control", id="branch") }}
+            </div>
+
+            <!-- SEARCH BY REGD NO -->
+            <div class="col-md-6">
+                {{ form.regd_no.label(class="form-label") }}
+                {{ form.regd_no(class="form-control", placeholder="Enter Registration No" , id="regd_no") }}
+            </div>
+
+            <!-- SEARCH BY NAME -->
+            <div class="col-md-6">
+                {{ form.name.label(class="form-label") }}
+                {{ form.name(class="form-control", placeholder="Enter Student Name" , id="name") }}
+            </div>
+
+            <!-- SEARCH BUTTON -->
+            <div class="col-12 text-center mt-3">
+                {{ form.submit(class="btn btn-search w-50") }}
+            </div>
+
+        </div>
+    </form>
+
+    <!-- RESULT TABLE -->
+    {% if students %}
+    <!-- TABLE -->
+    <div class="table-container table-responsive">
+        <table class="table table-dark table-striped align-middle">
+            <thead>
+                <tr>
+                    <th>Regd No</th>
+                    <th>Name</th>
+                    <th>Aadhar</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Address</th>
+                    <th>Gender</th>
+                    <th>DOB</th>
+                    <th>Blood Grp</th>
+                    <th>Branch</th>
+                    <th>Year</th>
+                    <th>Photo</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in students %}
+                <tr>
+                    <td>{{ s.regd_no }}</td>
+                    <td>{{ s.name }}</td>
+                    <td>{{ s.aadhaar }}</td>
+                    <td>{{ s.email }}</td>
+                    <td>{{ s.phone }}</td>
+                    <td>{{s.address}}</td>
+                    <td>{{ s.gender }}</td>
+                    <td>{{ s.dob }}</td>
+                    <td>{{s.blood_group}}</td>
+                    <td>{{ s.branch }}</td>
+                    <td>{{ s.year }}</td>
+                    <td>
+                        {% if s.student_id %}
+                        <img src="{{ url_for('student_photo', student_id=s.student_id) }}" width="60" height="60"
+                            style="border-radius:50%; object-fit:cover;">
+                        {% else %}
+                        No Image
+                        {% endif %}
+
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% elif searched %}
+    <!-- NO DATA MESSAGE -->
+    <div class="alert alert-warning text-center mt-4">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        No student record found
+    </div>
+    {% endif %}
+
+</div>
+
+</div> <!-- end of search-wrapper -->
+
+<script>
+    const yearField = document.getElementById("year");
+    const branchField = document.getElementById("branch");
+    const regdField = document.getElementById("regd_no");
+    const nameField = document.getElementById("name");
+
+    const allFields = [yearField, branchField, regdField, nameField];
+
+    function handleDisable(activeField) {
+        if (activeField.value.trim() !== "") {
+            allFields.forEach(field => {
+                if (field !== activeField) {
+                    field.disabled = true;
+                }
+            });
+        } else {
+            allFields.forEach(field => {
+                field.disabled = false;
+            });
+        }
+    }
+
+    yearField.addEventListener("change", () => handleDisable(yearField));
+    branchField.addEventListener("change", () => handleDisable(branchField));
+    regdField.addEventListener("input", () => handleDisable(regdField));
+    nameField.addEventListener("input", () => handleDisable(nameField));
+</script>
+
+
+{% endblock %}

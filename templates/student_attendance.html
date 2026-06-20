@@ -1,0 +1,306 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    /* Animated Gradient Background */
+
+    body {
+        background: linear-gradient(-45deg, #0f2027, #203a43, #2c5364, #1c92d2);
+        background-size: 400% 400%;
+        animation: gradientBG 12s ease infinite;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    /* Background animation */
+
+    @keyframes gradientBG {
+        0% {
+            background-position: 0% 50%;
+        }
+
+        50% {
+            background-position: 100% 50%;
+        }
+
+        100% {
+            background-position: 0% 50%;
+        }
+    }
+
+
+    /* Main Container */
+
+    .attendance-wrapper {
+        width: 90%;
+        max-width: 1100px;
+        margin: auto;
+        margin-top: 60px;
+    }
+
+
+    /* Title */
+
+    .page-title {
+        text-align: center;
+        color: white;
+        font-size: 36px;
+        font-weight: 600;
+        margin-bottom: 45px;
+        letter-spacing: 1px;
+    }
+
+
+    /* Glass Summary Card */
+
+    .summary-card {
+        background: rgba(255, 255, 255, 0.12);
+        backdrop-filter: blur(15px);
+        padding: 35px;
+        border-radius: 20px;
+        text-align: center;
+        color: white;
+        margin-bottom: 45px;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.35);
+        animation: fadeDown 1s ease;
+    }
+
+
+    /* Stats Layout */
+
+    .stats {
+        display: flex;
+        justify-content: center;
+        gap: 60px;
+        flex-wrap: wrap;
+        margin-bottom: 30px;
+    }
+
+    .stat-box {
+        text-align: center;
+    }
+
+    .stat-number {
+        font-size: 28px;
+        font-weight: 700;
+    }
+
+    .stat-title {
+        font-size: 15px;
+        opacity: 0.9;
+    }
+
+
+    /* Progress Bar */
+
+    .progress {
+        height: 24px;
+        border-radius: 30px;
+        overflow: hidden;
+        background: #ddd;
+    }
+
+    .progress-bar {
+        background: linear-gradient(90deg, #00c853, #64dd17);
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: width 1.5s ease;
+    }
+
+
+    /* Table Card */
+
+    .table-card {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.35);
+        animation: slideUp 1s ease;
+    }
+
+
+    /* Table Styling */
+
+    .table thead {
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        color: white;
+    }
+
+    .table tbody tr {
+        transition: 0.3s;
+    }
+
+    .table tbody tr:hover {
+        background: #f5f7ff;
+        transform: scale(1.01);
+    }
+
+
+    /* Badge */
+
+    .badge {
+        padding: 7px 15px;
+        font-size: 14px;
+    }
+
+
+    /* Animations */
+
+    @keyframes fadeDown {
+        from {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(40px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Back Button */
+    .back-btn {
+        position: fixed;
+        top: 15px;
+        left: 15px;
+        background-color: rgba(0, 0, 0, 0.4);
+        color: white;
+        padding: 8px 14px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        z-index: 1000;
+        transition: 0.3s ease;
+        font-size: 14px;
+    }
+
+    .back-btn:hover {
+        background-color: #222;
+    }
+</style>
+
+<!-- FLASH MESSAGES -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for category, message in messages %}
+<div class="alert alert-{{ category }} alert-dismissible fade show text-center" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+
+<a href="{{url_for('student_subjects')}}" class="back-btn">
+    <i class="fa-solid fa-arrow-left"></i> Back
+</a>
+<div class="attendance-wrapper">
+
+    <h2 class="page-title">
+        📊 Attendance - {{subject.subject_name}}
+    </h2>
+
+    <!-- Summary Card -->
+
+    <div class="summary-card">
+
+        <div class="stats">
+
+            <div class="stat-box">
+                <div class="stat-number">{{total_classes}}</div>
+                <div class="stat-title">Total Classes</div>
+            </div>
+
+            <div class="stat-box">
+                <div class="stat-number">{{present}}</div>
+                <div class="stat-title">Present</div>
+            </div>
+
+            <div class="stat-box">
+                <div class="stat-number">{{percentage}}%</div>
+                <div class="stat-title">Attendance</div>
+            </div>
+
+        </div>
+
+        <!-- Progress Bar -->
+
+        <div class="progress">
+
+            <div class="progress-bar" style="width: {{percentage}}%;">
+
+                {{percentage}}%
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Attendance Table -->
+
+    <div class="table-card">
+
+        <table class="table table-bordered text-center">
+
+            <thead>
+
+                <tr>
+                    <th>Date</th>
+                    <th>Status</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for r in records %}
+
+                <tr>
+
+                    <td>{{r.attendance_date}}</td>
+
+                    <td>
+
+                        {% if r.status == "Present" %}
+
+                        <span class="badge bg-success">
+                            ✔ Present
+                        </span>
+
+                        {% else %}
+
+                        <span class="badge bg-danger">
+                            ✘ Absent
+                        </span>
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}

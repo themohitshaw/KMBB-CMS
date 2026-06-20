@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>KMBB-Plus</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        /* ===== GLOBAL FONT SIZE ===== */
+        html {
+            font-size: 18px;
+        }
+
+        @media (max-width: 768px) {
+            html {
+                font-size: 16px;
+            }
+        }
+
+        @media (max-width: 450px) {
+            html {
+                font-size: 15px;
+            }
+        }
+
+        /* ===== BACKGROUND ===== */
+        body {
+            background-image: url("{{ url_for('static', filename='images/kmbb blur image.png') }}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        /* ===== NAVBAR ===== */
+        .navbar {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(8px);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: 10px 15px;
+        }
+
+        .navbar .container-fluid {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .navbar-brand img {
+            width: 45px;
+        }
+
+        .navbar-brand h6 {
+            font-size: 1rem;
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .navbar-brand small {
+            font-size: 0.75rem;
+        }
+
+        .navbar-brand div {
+            max-width: 250px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .nav-btns {
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 6px;
+        }
+
+        .nav-btns a {
+            flex: 0 0 auto;
+        }
+
+        .gositebtn,
+        .loginbtn {
+            height: 38px;
+            width: 95px;
+            border-radius: 6px;
+            background-color: rgb(252, 100, 44);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .gositebtn:hover,
+        .loginbtn:hover {
+            transform: translateY(-2px) scale(1.03);
+        }
+
+        /* ===== MAIN ===== */
+        .main-wrapper {
+            margin-top: 150px;
+            padding: 15px;
+        }
+
+        .page-title {
+            text-align: center;
+            font-size: 3.4rem;
+            font-weight: 600;
+            margin-bottom: 40px;
+        }
+
+        /* ===== NOTICE LIST ===== */
+        .notice-list {
+            max-width: 700px;
+            margin: auto;
+        }
+
+        /* ===== CARD ===== */
+        .notice-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(6px);
+            border-radius: 8px;
+            padding: 14px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+            position: relative;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeUp 0.5s ease forwards;
+        }
+
+        .notice-card:hover {
+            transform: translateY(-4px) scale(1.01);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .notice-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 3px;
+            width: 100%;
+            background: linear-gradient(90deg, #ff6a00, #ff3c00);
+        }
+
+        /* ===== NEW BADGE ===== */
+        .new-badge {
+            position: absolute;
+            top: 6px;
+            right: 8px;
+            background: red;
+            color: white;
+            font-size: 0.6rem;
+            padding: 3px 8px;
+            border-radius: 10px;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0.4;
+            }
+        }
+
+        /* ===== TEXT ===== */
+        .notice-title {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .notice-meta {
+            font-size: 0.85rem;
+            color: #555;
+            margin-top: 4px;
+        }
+
+        .notice-footer {
+            margin-top: 8px;
+            display: flex;
+            justify-content: space-between;
+            /* buttons left, date right */
+            align-items: center;
+        }
+
+        .notice-buttons {
+            display: flex;
+            gap: 6px;
+            /* gap between View and Download buttons */
+        }
+
+        /* ===== BUTTONS ===== */
+        .view-btn {
+            font-size: 0.75rem;
+            padding: 6px 14px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            background: linear-gradient(135deg, #ff6a00, #ff3c00);
+            color: white;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .view-btn:hover {
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 6px 18px rgba(255, 106, 0, 0.4);
+        }
+
+        .view-btn:active {
+            transform: scale(0.95);
+        }
+
+        .view-btn::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -75%;
+            width: 50%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: skewX(-20deg);
+        }
+
+        .view-btn:hover::after {
+            animation: shine 0.6s ease;
+        }
+
+        @keyframes shine {
+            100% {
+                left: 120%;
+            }
+        }
+
+        /* Download Button Variation */
+        a.view-btn {
+            background: linear-gradient(135deg, #007bff, #0056d2);
+        }
+
+        a.view-btn:hover {
+            box-shadow: 0 6px 18px rgba(0, 91, 255, 0.4);
+        }
+
+        /* ===== DATE ===== */
+        .notice-date {
+            font-size: 0.7rem;
+            color: #666;
+        }
+
+        /* ===== ANIMATION ===== */
+        @keyframes fadeUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===== MOBILE ===== */
+        @media (max-width: 450px) {
+            .navbar-brand img {
+                width: 32px;
+            }
+
+            .navbar-brand div {
+                max-width: 200px;
+            }
+
+            .gositebtn,
+            .loginbtn {
+                width: 65px;
+                height: 28px;
+                font-size: 0.65rem;
+            }
+
+            .page-title {
+                font-size: 1.1rem;
+            }
+
+            .notice-footer {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+        }
+
+        /* Hide text very small screens */
+        @media (max-width: 350px) {
+            .navbar-brand div {
+                display: none;
+            }
+        }
+
+        /* ===== MODAL ===== */
+        .modal-content {
+            border-radius: 12px;
+        }
+
+        .modal-header {
+            background: linear-gradient(90deg, #ff6a00, #ff3c00);
+            color: white;
+        }
+
+        .modal-title {
+            font-size: 1.1rem;
+        }
+
+        /* MODAL ANIMATION */
+        .modal.fade .modal-dialog {
+            transform: scale(0.8) translateY(50px);
+            opacity: 0;
+            transition: all 0.35s ease;
+        }
+
+        .modal.show .modal-dialog {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+        }
+
+        .modal-backdrop.show {
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-body p {
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .home-footer {
+            background-color: rgba(0, 0, 0, 0.75);
+            /* black background */
+            color: white;
+            padding: 70px 20px;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .home-footer a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s ease, transform 0.2s ease;
+        }
+
+        .home-footer a:hover {
+            color: #ff6a00;
+            /* orange hover effect */
+            transform: translateY(-2px);
+        }
+
+        .home-footer .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .home-footer .footer-logo img {
+            width: 50px;
+        }
+
+        .home-footer h6 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .home-footer small {
+            font-size: 0.85rem;
+        }
+
+        .home-footer .footer-section {
+            margin-bottom: 20px;
+        }
+
+        .home-footer .footer-links a {
+            display: block;
+            margin: 6px 0;
+        }
+
+        .home-footer .social-icons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .home-footer .social-icons a {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            font-size: 1rem;
+        }
+
+        .home-footer .social-icons a:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .home-footer .footer-bottom {
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+            padding-top: 15px;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 768px) {
+            .home-footer .row {
+                flex-direction: column;
+                gap: 20px;
+            }
+        }
+
+        .dev-name {
+            color: white;
+            transition: 0.3s;
+        }
+
+        .dev-name:hover {
+            color: #ff6a00;
+        }
+
+        .docs-btn {
+            background-color: black;
+            color: white;
+        }
+
+        .docs-btn:hover {
+            background-color: #ff6a00;
+        }
+
+        /* ===== SCROLLABLE NOTICE BOX ===== */
+        .notice-list {
+            max-width: 700px;
+            margin: auto;
+
+            max-height: 50vh;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        /* Smooth scroll */
+        .notice-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .notice-list::-webkit-scrollbar-thumb {
+            background: #ff6a00;
+            border-radius: 10px;
+        }
+
+        .notice-list::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar shadow-sm">
+        <div class="container-fluid">
+            <a class="navbar-brand">
+                <img src="{{ url_for('static', filename='images/KMBB_Round_Logo.png') }}">
+                <div>
+                    <h6><b>KMBB</b></h6>
+                    <small>College of Engineering and Technology</small>
+                </div>
+            </a>
+
+            <div class="nav-btns">
+                <a href="{{ url_for('about') }}" class="loginbtn docs-btn">Docs</a>
+                <a href="{{url_for('loginoption')}}" class="loginbtn">Login</a>
+                <a href="https://www.kmbb.in/" target="_blank" class="gositebtn">Site</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-wrapper">
+
+        <div class="page-title">Notifications</div>
+
+        <div class="notice-list">
+
+            {% for notice in notices %}
+
+            <div class="notice-card">
+
+                {% set days = (now - notice.created_at).days %}
+                {% if days <= 10 %} <span class="new-badge">NEW</span>
+                    {% endif %}
+
+                    <div class="notice-title">{{ notice.notice_number }} - {{ notice.title }}</div>
+                    <div class="notice-meta">Purpose: {{ notice.purpose }} | By: {{ notice.declared_by }}</div>
+
+                    <div class="notice-footer">
+
+                        <div class="notice-buttons">
+                            <button class="view-btn" data-bs-toggle="modal"
+                                data-bs-target="#noticeModal{{ notice.id }}">
+                                View Notice
+                            </button>
+
+                            {% if notice.drive_link %}
+                            <a href="{{ notice.drive_link }}" target="_blank" class="view-btn">
+                                Download
+                            </a>
+                            {% endif %}
+                        </div>
+
+                        <div class="notice-date">
+                            {{ notice.created_at.strftime('%d %b %Y') }}
+                        </div>
+
+                    </div>
+            </div>
+
+            <!-- MODAL -->
+            <div class="modal fade" id="noticeModal{{ notice.id }}" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">{{ notice.notice_number }} - {{ notice.title }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p><b>Subject:</b> {{ notice.subject }}</p>
+                            <p><b>Purpose:</b> {{ notice.purpose }}</p>
+                            <p><b>Declared By:</b> {{ notice.declared_by }}</p>
+                            <p><b>Department:</b> {{ notice.department }}</p>
+                            <hr>
+                            <p>{{ notice.description }}</p>
+                        </div>
+                        <div class="modal-footer">
+                            {% if notice.drive_link %}
+                            <a href="{{ notice.drive_link }}" target="_blank" class="btn btn-primary">Download File</a>
+                            {% endif %}
+                            <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% endfor %}
+
+        </div>
+    </div>
+    <footer class="home-footer">
+        <div class="container">
+
+            <div class="row d-flex justify-content-between">
+
+                <!-- College Info -->
+                <div class="col-md-4 footer-section">
+                    <div class="footer-logo">
+                        <img src="{{ url_for('static', filename='images/KMBB_Round_Logo.png') }}">
+                        <div>
+                            <h6>KMBB</h6>
+                            <small>College of Engineering and Technology</small>
+                        </div>
+                    </div>
+                    <p>
+                        Daleiput , khurdha , Bhubaneshwar, Odisha, India<br>
+                        Phone: +91 8338881100 , +91 9238046489 , +91 9238046494<br>
+                        Email: kmbbcetplus@gmail.com
+                    </p>
+                </div>
+
+                <!-- Quick Links -->
+                <div class="col-md-3 footer-section footer-links">
+                    <h6>Quick Links</h6>
+                    <a href="{{ url_for('hello') }}">Home</a>
+                    <a href="{{ url_for('about') }}">Docs</a>
+                    <a href="{{ url_for('loginoption') }}">Login</a>
+                    <a href="https://www.kmbb.in/" target="_blank">Official Site</a>
+                </div>
+
+                <!-- Social Media -->
+                <div class="col-md-3 footer-section">
+                    <h6>Follow Us</h6>
+                    <div class="social-icons">
+                        <a href="https://www.facebook.com/kmbbengineeringcollege" target="_blank"><i
+                                class="bi bi-facebook"></i></a>
+                        <a href="https://x.com/kmbbenggcollege/" target="_blank"><i class="bi bi-twitter-x"></i></a>
+                        <a href="https://www.youtube.com/@kmbbengineeringcollege" target="_blank"><i
+                                class="bi bi-youtube"></i></a>
+                        <a href="https://www.instagram.com/kmbbengineeringcollege/" target="_blank"><i
+                                class="bi bi-instagram"></i></a>
+                        <a href="https://www.linkedin.com/company/kmbbengineeringcollege/" target="_blank"><i
+                                class="bi bi-linkedin"></i></a>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Footer Bottom -->
+            <div class="footer-bottom mt-3">
+                &copy; {{ now.year }} KMBB College of Engineering and Technology. All Rights Reserved.
+                <br>
+                <span style="font-size: 0.8rem; opacity: 0.8;">
+                    Developed by Mohit Kumar Shaw & Team
+                </span>
+            </div>
+
+        </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>
+

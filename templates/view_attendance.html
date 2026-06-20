@@ -1,0 +1,311 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+        min-height: 100vh;
+        color: white;
+    }
+
+    .container {
+        max-width: 1200px;
+    }
+
+    /* Glass card */
+    .attendance-card {
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Labels */
+    label {
+        color: white;
+        font-weight: 500;
+    }
+
+    .subject-info {
+        color: white;
+        font-size: 17px;
+        margin-bottom: 20px;
+    }
+
+    /* ============================= */
+    /* TABLE DESIGN */
+    /* ============================= */
+
+    .attendance-table {
+        width: 100%;
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        border-radius: 12px;
+        overflow: hidden;
+        border-collapse: collapse;
+    }
+
+    /* Table heading */
+    .attendance-table thead {
+        background: rgba(0, 0, 0, 0.35);
+    }
+
+    .attendance-table thead th {
+        color: #ffffff;
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        padding: 14px;
+        text-transform: uppercase;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+    }
+
+    /* Table body */
+    .attendance-table tbody tr {
+        transition: 0.3s;
+    }
+
+    .attendance-table th,
+    .attendance-table td {
+        text-align: center;
+        vertical-align: middle;
+        padding: 12px;
+        border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    /* Hover */
+    .attendance-table tbody tr:hover {
+        background: rgba(255, 255, 255, 0.08);
+    }
+
+    /* Student photo */
+    .student-photo {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid white;
+    }
+
+    /* Percentage colors */
+    .percent-good {
+        color: #00ff9d;
+        font-weight: bold;
+    }
+
+    .percent-low {
+        color: #ff4d4d;
+        font-weight: bold;
+    }
+
+    /* Buttons */
+    .btn-primary {
+        background: linear-gradient(45deg, #4facfe, #00f2fe);
+        border: none;
+    }
+
+    .btn-primary:hover {
+        opacity: 0.9;
+    }
+
+    /* PRINT SETTINGS */
+    @media print {
+
+        body {
+            background: white !important;
+            color: black !important;
+        }
+
+        /* Hide everything except table */
+        .no-print {
+            display: none !important;
+        }
+
+        #printArea {
+            display: block;
+        }
+
+        /* Table print style */
+        .attendance-table {
+            background: white !important;
+            color: black !important;
+            border: 1px solid black;
+        }
+
+        .attendance-table th,
+        .attendance-table td {
+            color: black !important;
+            border: 1px solid black;
+        }
+
+        .attendance-table thead {
+            background: #f2f2f2 !important;
+        }
+
+        /* Remove glass UI */
+        .attendance-card {
+            box-shadow: none;
+            background: white !important;
+        }
+
+    }
+
+    .back-btn {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        background-color: rgba(0, 0, 0, 0.3);
+        color: white;
+        padding: 8px 15px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        z-index: 1000;
+        transition: 0.3s ease;
+    }
+
+    .back-btn:hover {
+        background-color: #444;
+        color: white;
+    }
+</style>
+<a href="{{ url_for('attendance_option', subject_id=session['subject_id']) }}" class="back-btn">
+    <i class="fa-solid fa-arrow-left"></i> Back
+</a>
+<!-- FLASH MESSAGES -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for category, message in messages %}
+<div class="alert alert-{{ category }} alert-dismissible fade show text-center" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+
+
+<div class="container mt-4">
+
+    <h3 class="mb-3">View Attendance</h3>
+
+    <div class="card attendance-card p-4 mb-4">
+
+        <p class="subject-info">
+            <b>Year:</b> {{ subject.year }} |
+            <b>Branch:</b> {{ subject.branch }} |
+            <b>Subject:</b> {{ subject.subject_name }}
+        </p>
+
+        <form method="POST" class="row g-3 no-print">
+
+            <div class="col-md-4">
+                <label>From Date</label>
+                <input type="date" name="from_date" class="form-control" max="{{ today }}" required>
+            </div>
+
+            <div class="col-md-4">
+                <label>To Date</label>
+                <input type="date" name="to_date" class="form-control" max="{{ today }}" required>
+            </div>
+
+            <div class="col-md-4 align-self-end">
+                <button type="submit" class="btn btn-primary w-100">View Attendance</button>
+            </div>
+
+        </form>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }} text-center mt-3 no-print">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+    </div>
+
+
+    {% if students %}
+
+    <div class="action-buttons mb-3 no-print">
+
+        <button onclick="printAttendance()" class="btn btn-success">
+            Print
+        </button>
+
+    </div>
+
+    <div id="printArea">
+
+        <div class="table-responsive">
+
+            <table class="attendance-table">
+
+                <thead>
+                    <tr>
+                        <th>Photo</th>
+                        <th>Regd No</th>
+                        <th>Name</th>
+                        <th>Total Classes</th>
+                        <th>Present</th>
+                        <th>Percentage</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for s in students %}
+
+                    <tr>
+
+                        <td>
+                            <img src="{{ url_for('student_photo', student_id=s.student_id) }}" class="student-photo">
+                        </td>
+
+                        <td>{{ s.regd_no }}</td>
+                        <td>{{ s.name }}</td>
+                        <td>{{ s.total_classes }}</td>
+                        <td>{{ s.total_present }}</td>
+
+                        <td>
+                            {% if s.percentage and s.percentage >= 75 %}
+                            <span class="percent-good">{{ s.percentage }}%</span>
+                            {% else %}
+                            <span class="percent-low">{{ s.percentage or 0 }}%</span>
+                            {% endif %}
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+
+<!-- Print -->
+<script>
+
+    function printAttendance() {
+        window.print();
+    }
+
+</script>
+
+
+{% endblock %}

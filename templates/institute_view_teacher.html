@@ -1,0 +1,310 @@
+{% extends "base.html" %}
+
+{% block title %} Institute | View Teachers {% endblock %}
+
+{% block style %}
+<style>
+    .search-wrapper {
+        width: 100%;
+        max-width: 1200px;
+        background: rgba(0, 0, 0, 0.75);
+        padding: 30px;
+        border-radius: 14px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        margin: 80px auto 50px auto;
+        /* Top space added */
+    }
+
+    .search-title {
+        color: #fff;
+        text-align: center;
+        font-weight: 600;
+        margin-bottom: 25px;
+    }
+
+    .form-label {
+        color: #ddd;
+        font-size: 14px;
+    }
+
+    .form-control {
+        border-radius: 8px;
+        font-size: 14px;
+        padding: 8px;
+        border: none;
+        outline: none;
+    }
+
+    .btn-search {
+        background: #0d6efd;
+        color: #fff;
+        border-radius: 8px;
+        padding: 12px;
+        font-weight: 500;
+        border: none;
+        cursor: pointer;
+        width: 100%;
+    }
+
+
+    .btn-search:hover {
+        background: #084298;
+    }
+
+.table-container {
+    margin-top: 30px;
+    overflow-x: auto;
+    border-radius: 12px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: linear-gradient(to right, #1f2933, #111827);
+    color: #f1f1f1;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+/* Header */
+th {
+    background: linear-gradient(to right, #111827, #1f2933);
+    color: #ffffff;
+    padding: 14px 10px;
+    font-weight: 600;
+    font-size: 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+/* Table Cells */
+td {
+    padding: 14px 10px;
+    font-size: 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+/* Row Hover Effect */
+tbody tr {
+    transition: 0.3s ease;
+}
+
+tbody tr:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Alternate Row Color */
+tbody tr:nth-child(even) {
+    background: rgba(255,255,255,0.03);
+}
+
+/* Remove white borders */
+th, td {
+    border-left: none;
+    border-right: none;
+    text-align: center;
+}
+
+/* Image Styling */
+table img {
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(255,255,255,0.2);
+}
+
+
+    @media (max-width: 768px) {
+        .search-wrapper {
+            padding: 20px;
+        }
+
+        th,
+        td {
+            font-size: 12px;
+            padding: 8px;
+        }
+    }
+
+    .back-btn {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        background-color: rgba(0, 0, 0, 0.5);
+        color: white;
+        padding: 8px 15px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        z-index: 1000;
+        transition: 0.3s ease;
+    }
+
+    .back-btn:hover {
+        background-color: #444;
+        color: white;
+    }
+
+    .btn-search-all {
+        background: #0d6efd;
+        color: #fff;
+        border-radius: 8px;
+        padding: 12px;
+        font-weight: 500;
+        text-align: center;
+        display: block;
+        text-decoration: none;
+        margin-top: 10px;
+        transition: 0.3s ease;
+    }
+
+    .btn-search-all:hover {
+        background: #084298;
+        color: #fff;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<a href="{{url_for('institute_data')}}" class="back-btn">
+    <i class="fa-solid fa-arrow-left"></i> Back
+</a>
+
+<!-- Flash Messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for category, message in messages %}
+<div class="alert alert-{{ category }} alert-dismissible fade show text-center mt-3 w-75 mx-auto" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+
+<div class="search-wrapper">
+
+    <h4 class="search-title">
+        <i class="fa-solid fa-chalkboard-user"></i> Search Faculty Records
+    </h4>
+
+    <!-- SEARCH FORM -->
+    <form method="POST">
+        {{ form.hidden_tag() }}
+
+        <div class="row" style="display:flex; gap:20px; flex-wrap:wrap;">
+
+            <!-- SEARCH BY REGD NO -->
+            <div style="flex:1; min-width:250px;">
+                {{ form.regd_no.label(class="form-label") }}
+                {{ form.regd_no(class="form-control", placeholder="Enter Registration No", id="regd_no") }}
+            </div>
+
+            <!-- SEARCH BY NAME -->
+            <div style="flex:1; min-width:250px;">
+                {{ form.name.label(class="form-label") }}
+                {{ form.name(class="form-control", placeholder="Enter Faculty Name", id="name") }}
+            </div>
+
+            <!-- SEARCH BUTTON -->
+            <div style="width:100%; margin-top:20px;">
+                {{ form.submit(class="btn-search w-100") }}
+            </div>
+
+            <div style="width:100%; margin-top:10px;">
+                {{ form.search_all(class="btn-search-all w-100") }}
+            </div>
+
+
+        </div>
+    </form>
+
+    <!-- RESULT TABLE -->
+    {% if teachers %}
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Regd No</th>
+                    <th>Name</th>
+                    <th>Aadhar</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Address</th>
+                    <th>Gender</th>
+                    <th>DOB</th>
+                    <th>Blood Grp</th>
+                    <th>Designation</th>
+                    <th>Qualification</th>
+                    <th>Dept</th>
+                    <th>Exp. Yr</th>
+                    <th>DOJ</th>
+                    <th>Salary</th>
+                    <th>Photo</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in teachers %}
+                <tr>
+                    <td>{{ t.regd_no }}</td>
+                    <td>{{ t.full_name }}</td>
+                    <td>{{ t.aadhaar }}</td>
+                    <td>{{ t.email }}</td>
+                    <td>{{ t.phone }}</td>
+                    <td>{{ t.address }}</td>
+                    <td>{{ t.gender }}</td>
+                    <td>{{ t.date_of_birth }}</td>
+                    <td>{{ t.blood_group }}</td>
+                    <td>{{ t.designation }}</td>
+                    <td>{{ t.qualification }}</td>
+                    <td>{{ t.department }}</td>
+                    <td>{{ t.experience_years }}</td>
+                    <td>{{ t.date_of_joining }}</td>
+                    <td>{{ t.salary }}</td>
+                    <td>
+                        {% if t.teacher_id %}
+                        <img src="{{ url_for('teacher_photo', teacher_id=t.teacher_id) }}" width="50" height="50"
+                            style="border-radius:50%; object-fit:cover;">
+                        {% else %}
+                        No Image
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% elif searched %}
+    <div style="text-align:center; margin-top:20px; background:#fff3cd; padding:10px; border-radius:6px;">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        No teacher record found
+    </div>
+    {% endif %}
+
+</div>
+
+<!-- Disable Other Field When One Is Used -->
+<script>
+    const regdField = document.getElementById("regd_no");
+    const nameField = document.getElementById("name");
+
+    const allFields = [regdField, nameField];
+
+    function handleDisable(activeField) {
+        if (activeField.value.trim() !== "") {
+            allFields.forEach(field => {
+                if (field !== activeField) {
+                    field.disabled = true;
+                }
+            });
+        } else {
+            allFields.forEach(field => {
+                field.disabled = false;
+            });
+        }
+    }
+
+    regdField.addEventListener("input", () => handleDisable(regdField));
+    nameField.addEventListener("input", () => handleDisable(nameField));
+</script>
+
+{% endblock %}

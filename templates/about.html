@@ -1,0 +1,273 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    /* ===== WRAPPER ===== */
+    .doc-wrapper {
+        max-width: 1300px;
+        margin: 20px auto;
+        padding: 20px;
+    }
+
+    /* ===== SECTION ===== */
+    .doc-section {
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+        backdrop-filter: blur(6px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+
+        animation: fadeUp 0.6s ease;
+    }
+
+    /* ===== HEADINGS ===== */
+    .doc-section h2 {
+        font-size: 22px;
+        font-weight: 600;
+        margin-bottom: 12px;
+        border-left: 5px solid #ff6a00;
+        padding-left: 10px;
+    }
+
+    /* ===== TEXT ===== */
+    .doc-section p {
+        font-size: 15px;
+        line-height: 1.6;
+    }
+
+    /* ===== TEAM CARDS ===== */
+    .team-card {
+        background: linear-gradient(135deg, #0f2027, #203a43);
+        color: white;
+        padding: 18px;
+        border-radius: 12px;
+        text-align: center;
+        transition: 0.4s;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* hover effect */
+    .team-card:hover {
+        transform: translateY(-8px) scale(1.03);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    }
+
+    /* glow line */
+    .team-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 3px;
+        background: linear-gradient(90deg, #ff6a00, #ff3c00);
+        transition: 0.5s;
+    }
+
+    .team-card:hover::before {
+        left: 0;
+    }
+
+    /* role */
+    .role {
+        font-size: 13px;
+        color: #ffb199;
+        margin-bottom: 5px;
+    }
+
+    /* name */
+    .name {
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    /* desc */
+    .desc {
+        font-size: 13px;
+        margin-top: 5px;
+    }
+
+    /* ===== MENTOR CARDS ===== */
+    .mentor-card {
+        background: #111;
+        color: white;
+        padding: 18px;
+        border-radius: 12px;
+        transition: 0.3s;
+    }
+
+    .mentor-card:hover {
+        transform: scale(1.03);
+    }
+
+    /* ===== ANIMATION ===== */
+    @keyframes fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(25px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* ===== FOOTER ===== */
+    .doc-footer {
+        background: black;
+        color: white;
+        padding: 20px;
+        text-align: center;
+        border-radius: 10px;
+    }
+
+    /* ===== MOBILE ===== */
+    @media (max-width: 600px) {
+        .doc-wrapper {
+            padding: 10px;
+        }
+    }
+
+    .doc-title {
+        font-size: 38px;
+        font-weight: 700;
+        color: #222;
+        letter-spacing: 1px;
+        animation: fadeUp 0.6s ease;
+    }
+
+    @media (max-width: 600px) {
+        .doc-title {
+            font-size: 26px;
+        }
+    }
+
+    .back-btn {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        background: rgba(0, 0, 0, 0.3);
+        color: white;
+        padding: 8px 15px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        z-index: 1000;
+        transition: 0.3s;
+    }
+
+    .back-btn:hover {
+        background: #444;
+        color: white;
+    }
+</style>
+<a href="{{url_for('hello')}}" class="back-btn">
+    <i class="fa-solid fa-arrow-left"></i> Back
+</a>
+<div class="doc-wrapper">
+
+    <!-- TITLE -->
+    <h1 class="doc-title text-center mb-4">Project Documentation</h1>
+
+    <!-- OVERVIEW -->
+    <div class="doc-section">
+        <h2>Project Overview</h2>
+        <p>
+            College Management and Attendance System developed using Flask and MySQL.
+            It helps manage attendance, student records, and notices digitally.
+        </p>
+    </div>
+
+    <!-- FEATURES -->
+    <div class="doc-section">
+        <h2>Key Features</h2>
+        <ul>
+            <li>Online Attendance</li>
+            <li>Notice Management</li>
+            <li>Student Data Storage</li>
+            <li>Download Notes</li>
+            <li>Secure Login System</li>
+        </ul>
+    </div>
+
+    <!-- TECH -->
+    <div class="doc-section">
+        <h2>Technologies Used</h2>
+        <ul>
+            <li>Frontend: HTML, CSS, Bootstrap</li>
+            <li>Backend: Flask</li>
+            <li>Database: MySQL</li>
+        </ul>
+    </div>
+
+    <!-- ===== TEAM ===== -->
+    <div class="doc-section">
+        <h2>Meet Our Team</h2>
+
+        <div class="row text-center">
+
+            <div class="col-md-4 col-12 mb-3">
+                <div class="team-card">
+                    <div class="role">Technical Lead</div>
+                    <div class="name">Mohit Kumar Shaw</div>
+                    <div class="desc">Full Stack Developer & Database Manager</div>
+                </div>
+            </div>
+
+            <div class="col-md-4 col-12 mb-3">
+                <div class="team-card">
+                    <div class="role">Presentation Lead</div>
+                    <div class="name">Abhisek Biswal</div>
+                    <div class="desc">Project Representative & Spokesperson</div>
+                </div>
+            </div>
+
+            <div class="col-md-4 col-12 mb-3">
+                <div class="team-card">
+                    <div class="role">Research & Insights Lead</div>
+                    <div class="name">Nageswar Samantray</div>
+                    <div class="desc">Marketing & Research Coordinator</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ===== MENTOR ===== -->
+    <div class="doc-section">
+        <h2>Mentored By</h2>
+
+        <div class="row text-center">
+
+            <div class="col-md-6 col-12 mb-3">
+                <div class="mentor-card">
+                    <h5>Mr. Rabindra Kumar Pradhan</h5>
+                    <p>(HOD of ECE Department)</p>
+                    <p>
+                        We express our heartfelt gratitude for his valuable guidance,
+                        continuous support, and encouragement throughout the project.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-12 mb-3">
+                <div class="mentor-card">
+                    <h5>Mr. Sangram Keshari Tripathy</h5>
+                    <p>(HOD of CSE Department)</p>
+                    <p>
+                        We sincerely thank him for his guidance and support
+                        during the development of this project.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+</div>
+
+{% endblock %}

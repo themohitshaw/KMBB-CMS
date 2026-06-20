@@ -1,0 +1,289 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    /* Wrapper Wider */
+    .notes-wrapper {
+        width: 90%;
+        max-width: 1500px;
+        margin: 50px auto;
+    }
+
+    /* Title */
+    .page-title {
+        text-align: center;
+        color: #ffffff;
+        font-size: 32px;
+        margin-bottom: 30px;
+        letter-spacing: 1px;
+    }
+
+    /* Search */
+    .search-box {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .search-box input {
+        width: 50%;
+        padding: 14px 20px;
+        border-radius: 30px;
+        border: none;
+        outline: none;
+        font-size: 16px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        transition: 0.3s;
+    }
+
+    .search-box input:focus {
+        width: 60%;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Grid */
+    .notes-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+        gap: 30px;
+    }
+
+    /* Card */
+    .note-card {
+        background: rgba(255, 255, 255, 0.95);
+        padding: 25px;
+        border-radius: 18px;
+        text-decoration: none;
+        color: #333;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.4s ease;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    .note-card:hover {
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Subject Title */
+    .note-card h3 {
+        margin-bottom: 10px;
+        color: #0f2027;
+    }
+
+    /* Meta */
+    .note-meta {
+        font-size: 13px;
+        color: #555;
+        margin-bottom: 15px;
+    }
+
+    /* Summary */
+    .summary {
+        font-size: 14px;
+        line-height: 1.6;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: break-word;
+    }
+
+    .read-more {
+        color: #0077ff;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    /* Date Badge */
+    .date-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: #2c5364;
+        color: #fff;
+        font-size: 11px;
+        padding: 6px 10px;
+        border-radius: 20px;
+    }
+
+    .back-btn {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        background-color: rgba(0, 0, 0, 0.3);
+        color: white;
+        padding: 8px 15px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        z-index: 1000;
+        transition: 0.3s ease;
+    }
+
+    .back-btn:hover {
+        background-color: #444;
+        color: white;
+    }
+
+    /* ================= MOBILE RESPONSIVE ================= */
+@media (max-width: 450px) {
+
+    .notes-wrapper {
+        width: 95%;
+        margin: 30px auto;
+    }
+
+    .page-title {
+        font-size: 22px;
+    }
+
+    .search-box input {
+        width: 90%;
+        font-size: 14px;
+        padding: 12px 15px;
+    }
+
+    .search-box input:focus {
+        width: 95%;
+    }
+
+    .notes-grid {
+        grid-template-columns: 1fr;  /* Force single column */
+        gap: 20px;
+    }
+
+    .note-card {
+        padding: 18px;
+    }
+
+    .note-card h3 {
+        font-size: 18px;
+    }
+
+    .note-meta {
+        font-size: 12px;
+    }
+
+    .summary {
+        font-size: 13px;
+    }
+
+    .date-badge {
+        font-size: 10px;
+        padding: 5px 8px;
+    }
+
+}
+</style>
+<a href="javascript:history.back()" class="back-btn">
+    <i class="fa-solid fa-arrow-left"></i> Back
+</a>
+<!-- FLASH MESSAGES -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for category, message in messages %}
+<div class="alert alert-{{ category }} alert-dismissible fade show text-center" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+<div class="notes-wrapper">
+
+    <h2 class="page-title">📚 Subject Notes</h2>
+
+    <!-- Search -->
+    <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Search by Subject Name...">
+    </div>
+
+    <!-- Cards -->
+    <div class="notes-grid" id="notesContainer">
+
+        {% for note in notes %}
+        <a href="{{ note.notes_link }}" target="_blank" class="note-card">
+
+            <div class="date-badge">
+                {{ note.created_at.strftime('%d %b %Y %I:%M %p') }}
+            </div>
+
+            <h3>{{ note.subject_name }}</h3>
+
+            <div class="note-meta">
+                <strong>Branch:</strong> {{ note.branch }} |
+                <strong>Year:</strong> {{ note.year }} <br>
+                <strong>Chapter:</strong> {{ note.chapter_name }} <br>
+                <strong>Uploaded By:</strong> {{ note.uploaded_by_name }}
+            </div>
+
+            <div class="summary">
+                {% if note.summary|length > 120 %}
+                <span class="short-text">
+                    {{ note.summary[:120] }}...
+                </span>
+                <span class="full-text" style="display:none;">
+                    {{ note.summary }}
+                </span>
+                <span class="read-more" onclick="toggleSummary(event)"> Read More</span>
+                {% else %}
+                <span>
+                    {{ note.summary }}
+                </span>
+                {% endif %}
+            </div>
+
+        </a>
+        {% endfor %}
+
+    </div>
+
+</div>
+
+<script>
+
+    /* SEARCH FUNCTION */
+    const searchInput = document.getElementById("searchInput");
+    const cards = document.querySelectorAll(".note-card");
+
+    searchInput.addEventListener("keyup", function () {
+        const filter = searchInput.value.toLowerCase();
+
+        cards.forEach(card => {
+            const title = card.querySelector("h3").innerText.toLowerCase();
+
+            if (title.includes(filter)) {
+                card.style.display = "block";
+            } else {
+                card.style.display = "none";
+            }
+        });
+    });
+
+    /* READ MORE FUNCTION */
+    function toggleSummary(event) {
+        event.preventDefault();   // Prevent card click
+        event.stopPropagation();
+
+        const summaryDiv = event.target.parentElement;
+        const shortText = summaryDiv.querySelector(".short-text");
+        const fullText = summaryDiv.querySelector(".full-text");
+
+        if (fullText.style.display === "none") {
+            shortText.style.display = "none";
+            fullText.style.display = "inline";
+            event.target.innerText = " Read Less";
+        } else {
+            shortText.style.display = "inline";
+            fullText.style.display = "none";
+            event.target.innerText = " Read More";
+        }
+    }
+
+</script>
+
+{% endblock %}

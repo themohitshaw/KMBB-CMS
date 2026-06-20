@@ -1,0 +1,208 @@
+{% extends "base.html" %}
+
+{% block title %} Institute Add Student {% endblock %}
+
+{% block style %}
+<style>
+    .form-wrapper {
+        margin: 50px 0px;
+        width: 100%;
+        max-width: 900px;
+        /* background: rgba(255,255,255,0.6); */
+        background-color: rgba(255, 255, 255, 0.6);
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .form-title {
+        text-align: center;
+        margin-bottom: 20px;
+        color: black;
+    }
+
+    .form-group {
+        margin-bottom: 16px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group label {
+        margin-bottom: 6px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .form-group input,
+    .form-group select {
+        background-color: white;
+        padding: 10px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        font-size: 15px;
+        outline: none;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+        border-color: #0d6efd;
+    }
+
+    .two-column {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+
+    .submit-btn {
+        width: 100%;
+        padding: 12px;
+        background-color: #198754;
+        border: none;
+        color: white;
+        font-size: 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+    }
+
+    .submit-btn:hover {
+        background-color: #146c43;
+    }
+
+    /* Responsive for mobile */
+    @media (max-width: 600px) {
+        .two-column {
+            grid-template-columns: 1fr;
+        }
+
+        .form-wrapper {
+            padding: 18px;
+        }
+    }
+
+    .back-btn {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        background-color:rgba(0, 0, 0, 0.3);
+        color: white;
+        padding: 8px 15px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        z-index: 1000;
+        transition: 0.3s ease;
+    }
+
+    .back-btn:hover {
+        background-color: #444;
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<a href="{{url_for('institute_data')}}" class="back-btn">
+    <i class="fa-solid fa-arrow-left"></i> Back
+</a>
+
+
+<!-- 🔔 FLASH MESSAGES START -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for category, message in messages %}
+<div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+<!-- 🔔 FLASH MESSAGES END -->
+
+<div class="form-wrapper">
+
+    <h2 class="form-title">
+        <i class="fa-solid fa-user-graduate"></i>
+        Student Admission
+    </h2>
+
+    <form method="POST" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+
+        <div class="form-group">
+            {{ form.student_name.label }}
+            {{ form.student_name() }}
+        </div>
+
+        <div class="form-group">
+            {{ form.regd_no.label }}
+            {{ form.regd_no() }}
+        </div>
+
+        <div class="form-group">
+            {{ form.aadhaar.label }}
+            {{ form.aadhaar() }}
+        </div>
+
+
+        <div class="form-group">
+            {{ form.email.label }}
+            {{ form.email() }}
+        </div>
+
+        <div class="form-group">
+            {{ form.phone.label }}
+            {{ form.phone() }}
+        </div>
+
+        <div class="form-group">
+            {{ form.address.label }}
+            {{ form.address() }}
+        </div>
+
+        <div class="two-column">
+            <div class="form-group">
+                {{ form.gender.label }}
+                {{ form.gender() }}
+            </div>
+
+            <div class="form-group">
+                {{ form.dob.label }}
+                {{ form.dob() }}
+            </div>
+        </div>
+
+        <div class="form-group">
+            {{ form.blood_group.label }}
+            {{ form.blood_group() }}
+        </div>
+
+        <div class="two-column">
+            <div class="form-group">
+                {{ form.branch.label }}
+                {{ form.branch() }}
+            </div>
+
+            <div class="form-group">
+                {{ form.year.label }}
+                {{ form.year() }}
+            </div>
+        </div>
+
+        <div class="form-group">
+            {{ form.photo.label }}
+            {{ form.photo() }}
+        </div>
+
+        <button type="submit" class="submit-btn">
+            Add Student
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}

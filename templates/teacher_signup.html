@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+
+{% block title %} Teacher Sign Up {% endblock %}
+
+{% block style %}
+<style>
+    .signup-container {
+        width: 100%;
+        max-width: 420px;
+        margin: 60px auto;
+        background: rgba(255, 255, 255, 0.6);
+        padding: 35px;
+        border-radius: 10px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .signup-title {
+        text-align: center;
+        margin-bottom: 25px;
+        color: #2c3e50;
+    }
+
+    .form-group {
+        margin-bottom: 18px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 10px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        font-size: 14px;
+    }
+
+    .form-group input:focus {
+        border-color: #007bff;
+        outline: none;
+    }
+
+    .btn {
+        width: 100%;
+        padding: 10px;
+        border-radius: 6px;
+        border: none;
+        background: #007bff;
+        color: white;
+        font-size: 15px;
+        cursor: pointer;
+    }
+
+    .btn:hover {
+        background: #0056b3;
+    }
+
+    .alert {
+        padding: 10px;
+        border-radius: 6px;
+        margin-bottom: 15px;
+        font-size: 14px;
+    }
+
+    .alert-success {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .alert-danger {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .alert-warning {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .back-btn {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        background-color: rgba(0, 0, 0, 0.3);
+        color: white;
+        padding: 8px 15px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        z-index: 1000;
+        transition: 0.3s ease;
+    }
+
+    .back-btn:hover {
+        background-color: #444;
+        color: white;
+    }
+
+    /* Loader Style */
+    .loader-container {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .spinner {
+        border: 6px solid #f3f3f3;
+        border-top: 6px solid #007bff;
+        border-radius: 50%;
+        width: 45px;
+        height: 45px;
+        animation: spin 1s linear infinite;
+        margin: auto;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<a href="{{url_for('teacher_login')}}" class="back-btn">
+    <i class="fa-solid fa-arrow-left"></i> Back
+</a>
+
+<div class="signup-container">
+
+    <h3 class="signup-title">Faculty Sign Up</h3>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="alert alert-{{ category }}">
+        {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+
+        {{ form.hidden_tag() }}
+
+        <!-- STEP 1: REGISTRATION + EMAIL -->
+        {% if not session.get('signup_otp') %}
+
+        <div class="form-group">
+            <label>Registration Number</label>
+            {{ form.regd() }}
+        </div>
+
+        <div class="form-group">
+            <label>Email</label>
+            {{ form.email() }}
+        </div>
+
+        <button type="submit" class="btn">
+            Send OTP
+        </button>
+
+        {% endif %}
+
+
+        <!-- STEP 2: OTP VERIFICATION -->
+        {% if session.get('signup_otp') and not session.get('otp_verified') %}
+
+        <div class="form-group">
+            <label>Enter OTP</label>
+            {{ form.otp() }}
+        </div>
+
+        <button type="submit" class="btn">
+            Verify OTP
+        </button>
+
+        {% endif %}
+
+
+        <!-- STEP 3: SET PASSWORD -->
+        {% if session.get('otp_verified') %}
+        <div class="form-group">
+            <label>New Password</label>
+            {{ form.password() }}
+        </div>
+
+        <div class="form-group">
+            <label>Confirm Password</label>
+            {{ form.confirm_password() }}
+        </div>
+
+        <button type="submit" class="btn">
+            Create Account
+        </button>
+
+        {% endif %}
+
+    </form>
+
+    <!-- Loader -->
+    <div id="loader" class="loader-container" style="display:none;">
+        <div class="spinner"></div>
+        <p id="loadingText">Processing... Please wait</p>
+    </div>
+
+
+</div>
+
+<!-- ------------------------------------------
+ JS for Loader
+------------------------------------------ -->
+
+<script>
+    const form = document.querySelector("form");
+
+    form.addEventListener("submit", function () {
+
+        // Show loader
+        document.getElementById("loader").style.display = "block";
+
+        // Change loading text depending on step
+        const loadingText = document.getElementById("loadingText");
+
+        if (document.querySelector("input[name='otp']")) {
+            loadingText.innerText = "Verifying OTP... Please wait";
+        } else if (document.querySelector("input[name='password']")) {
+            loadingText.innerText = "Creating account... Please wait";
+        } else {
+            loadingText.innerText = "Sending OTP... Please wait";
+        }
+
+        // Disable button
+        const btn = document.querySelector("button[type='submit']");
+        if (btn) {
+            btn.disabled = true;
+            btn.innerText = "Processing...";
+        }
+    });
+</script>
+
+
+{% endblock %}

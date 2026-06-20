@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %} mycollege {% endblock %}</title>
+
+    <!-- FONT AWESOME LINK -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- BOOT STRAP LINK -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+
+
+
+    {% block style %}
+
+    {% endblock %}
+    <style>
+        html,
+        body {
+            /* height: 100%; */
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-image: url("{{ url_for('static', filename='images/kmbb blur image.png') }}");
+            background-size: cover;
+            /* fill full screen */
+            background-position: center;
+            /* center image */
+            background-repeat: no-repeat;
+            /* no repeat */
+            background-attachment: fixed;
+            /* optional smooth scroll */
+        }
+
+        .div-container {
+            height: 100%;
+            overflow-y: auto;
+            padding: 20px;
+            /* background: rgba(255, 255, 255, 0.85); */
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            margin-top: 10vh;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="div-container">
+        {% block content %}
+
+        {% endblock %}
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous">
+            if (window.history.replaceState) {
+        window.history.replaceState(null, null, window.location.href);
+    }
+        </script>
+</body>
+
+</html>

@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+
+{% block title %} Update Teacher {% endblock %}
+
+{% block style %}
+<style>
+    .update-card {
+        width: 100%;
+        max-width: 450px;
+        backdrop-filter: blur(10px);
+        background: rgba(255, 255, 255, 0.6);
+        border-radius: 15px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        padding: 30px;
+    }
+
+    .update-heading {
+        font-weight: 600;
+        text-align: center;
+        margin-bottom: 25px;
+    }
+
+    @media (max-width: 576px) {
+        .update-card {
+            padding: 20px;
+        }
+    }
+
+    .back-btn {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        background-color: rgba(0, 0, 0, 0.3);
+        color: white;
+        padding: 8px 15px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        z-index: 1000;
+        transition: 0.3s ease;
+    }
+
+    .back-btn:hover {
+        background-color: #444;
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<a href="{{ url_for('institute_data') }}" class="back-btn">
+    <i class="fa-solid fa-arrow-left"></i> Back
+</a>
+
+
+<div class="container py-5">
+    <!-- FLASH MESSAGES -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="alert alert-{{ category }} alert-dismissible fade show text-center" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    <!-- SEARCH CARD -->
+    <div class="d-flex justify-content-center mb-4">
+        <div class="update-card">
+
+            <h3 class="update-heading">
+                <i class="fa-solid fa-magnifying-glass"></i> Search for Faculty to Update
+            </h3>
+
+            <form method="POST">
+                {{ form.hidden_tag() }}
+
+                <div class="mb-3">
+                    {{ form.regd_no.label(class="form-label fw-bold") }}
+                    {{ form.regd_no(class="form-control", placeholder="Enter Registration Number") }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.name.label(class="form-label fw-bold") }}
+                    {{ form.name(class="form-control", placeholder="Enter Teacher Name") }}
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        Search
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+    <!-- RESULT TABLE -->
+    {% if searched %}
+    {% if teachers %}
+    <div class="card shadow p-4" style="background: rgba(255,255,255,0.6); border-radius:15px;">
+        <h4 class="text-center mb-3">Search Results</h4>
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover text-center align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Regd No</th>
+                        <th>Name</th>
+                        <th>Designation</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for teacher in teachers %}
+                    <tr>
+                        <td>{{ teacher.regd_no }}</td>
+                        <td>{{ teacher.full_name }}</td>
+                        <td>{{ teacher.designation}}</td>
+                        <td>
+                            <a href="{{ url_for('final_update_teacher', regd_no=teacher.regd_no) }}"
+                                class="btn btn-success btn-sm">
+                                <i class="fa-solid fa-pen"></i> Update
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+    {% endif %}
+    {% endif %}
+
+</div>
+
+<script>
+
+    const regdField = document.getElementById("regd_no");
+    const nameField = document.getElementById("name");
+
+    const allFields = [regdField, nameField];
+
+    function handleDisable(activeField) {
+        if (activeField.value.trim() !== "") {
+            allFields.forEach(field => {
+                if (field !== activeField) {
+                    field.disabled = true;
+                }
+            });
+        } else {
+            allFields.forEach(field => {
+                field.disabled = false;
+            });
+        }
+    }
+
+
+    regdField.addEventListener("input", () => handleDisable(regdField));
+    nameField.addEventListener("input", () => handleDisable(nameField));
+</script>
+{% endblock %}

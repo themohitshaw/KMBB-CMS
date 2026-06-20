@@ -1,0 +1,280 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+
+body{
+    background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+    font-family:'Segoe UI',sans-serif;
+}
+
+/* MAIN WRAPPER */
+.notes-wrapper{
+    width:90%;
+    max-width:1400px;
+    margin:auto;
+    margin-top:40px;
+    padding:20px;
+}
+
+/* TITLE */
+.page-title{
+    text-align:center;
+    color:white;
+    font-size:28px;
+    margin-bottom:25px;
+}
+
+/* FORM */
+.class-form{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:15px;
+    flex-wrap:wrap;
+    background:rgba(255,255,255,0.08);
+    padding:20px;
+    border-radius:12px;
+    margin-bottom:30px;
+}
+
+.class-form select{
+    width:180px;
+    padding:10px;
+    border-radius:8px;
+    border:none;
+}
+
+.show-btn{
+    padding:10px 22px;
+    border-radius:8px;
+}
+
+/* GRID */
+.notes-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+    gap:20px;
+}
+
+/* CARD */
+.note-card{
+    background:rgba(255,255,255,0.95);
+    padding:20px;
+    border-radius:16px;
+    text-decoration:none;
+    color:#333;
+    transition:.3s;
+    box-shadow:0 6px 20px rgba(0,0,0,0.3);
+}
+
+.note-card:hover{
+    transform:translateY(-5px);
+}
+
+.note-card h3{
+    margin-bottom:10px;
+    font-size:18px;
+}
+
+.subject-meta{
+    font-size:14px;
+}
+
+/* BACK BUTTON */
+.back-btn{
+    position:fixed;
+    top:15px;
+    left:15px;
+    background:rgba(0,0,0,0.4);
+    color:white;
+    padding:8px 14px;
+    border-radius:8px;
+    text-decoration:none;
+    font-size:14px;
+}
+
+/* MODAL */
+.modal-content{
+    border-radius:15px;
+}
+
+.modal-backdrop.show{
+    backdrop-filter: blur(5px);
+}
+
+/* ================= MOBILE FIX ================= */
+@media(max-width:400px){
+
+    .page-title{
+        font-size:22px;
+    }
+
+    .notes-wrapper{
+        width:95%;
+        padding:15px;
+    }
+
+    .class-form{
+        flex-direction:column;
+        gap:12px;
+        padding:15px;
+    }
+
+    .class-form select{
+        width:100%;
+        font-size:14px;
+    }
+
+    .show-btn{
+        width:100%;
+        font-size:15px;
+    }
+
+    .notes-grid{
+        grid-template-columns:1fr;
+    }
+
+    .note-card{
+        padding:15px;
+    }
+
+    .note-card h3{
+        font-size:16px;
+    }
+
+    .subject-meta{
+        font-size:13px;
+    }
+
+    .back-btn{
+        font-size:12px;
+        padding:6px 10px;
+    }
+}
+
+</style>
+
+
+<!-- FLASH MESSAGES -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for category, message in messages %}
+<div class="alert alert-{{ category }} alert-dismissible fade show text-center" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+
+
+<a href="{{url_for('teacher_data')}}" class="back-btn">
+    <i class="fa-solid fa-arrow-left"></i> Back
+</a>
+
+<div class="notes-wrapper">
+
+<h2 class="page-title">📚 Select Exam</h2>
+
+<form method="POST" class="class-form">
+
+<select name="year" class="form-select" required>
+<option value="">Select Year</option>
+{% for y in range(1,5) %}
+<option value="{{y}}">{{y}}</option>
+{% endfor %}
+</select>
+
+<select name="branch" class="form-select" required>
+<option value="">Select Branch</option>
+<option value="CSE">CSE</option>
+<option value="ECE">ECE</option>
+<option value="ME">ME</option>
+<option value="CE">CE</option>
+<option value="EE">EE</option>
+</select>
+
+<button type="submit" class="btn btn-primary show-btn">
+Show Exams
+</button>
+
+</form>
+
+{% if exams %}
+
+<div class="notes-grid">
+
+{% for exam in exams %}
+
+<a href="#" class="note-card"
+data-bs-toggle="modal"
+data-bs-target="#passwordModal"
+data-exam="{{exam.id}}">
+
+<h3>{{ exam.exam_name }}</h3>
+
+<div class="subject-meta">
+<strong>Year:</strong> {{ exam.year_id }} <br>
+<strong>Branch:</strong> {{ exam.branch_name }}
+</div>
+
+</a>
+
+{% endfor %}
+
+</div>
+
+{% endif %}
+
+</div>
+
+
+<!-- PASSWORD MODAL -->
+<div class="modal fade" id="passwordModal" tabindex="-1">
+
+<div class="modal-dialog modal-dialog-centered">
+
+<div class="modal-content">
+
+<div class="modal-header">
+<h5 class="modal-title">🔐 Enter Exam Password</h5>
+<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+</div>
+
+<div class="modal-body">
+
+<form method="POST" action="{{url_for('verify_exam_password')}}">
+
+<input type="hidden" name="exam_id" id="exam_id">
+
+<div class="mb-3">
+<label>Password</label>
+<input type="password" name="password" class="form-control" required>
+</div>
+
+<button type="submit" class="btn btn-primary w-100">
+Open Exam
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<script>
+document.querySelectorAll(".note-card").forEach(card=>{
+    card.addEventListener("click",function(){
+        let examId = this.getAttribute("data-exam")
+        document.getElementById("exam_id").value = examId
+    })
+})
+</script>
+
+{% endblock %}
